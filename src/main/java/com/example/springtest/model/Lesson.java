@@ -16,10 +16,9 @@ public class Lesson {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
-    private String tittle;
+    private String title;
 
     @ManyToMany(mappedBy = "lessons")
     @JsonIgnore
