@@ -1,40 +1,43 @@
 package com.example.springtest.controller;
 
-import com.example.springtest.model.User;
+import com.example.springtest.api.UserApi;
+import com.example.springtest.api.model.UserCreateRequest;
+import com.example.springtest.api.model.UserResponse;
 import com.example.springtest.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController {
-
+public class UserController implements UserApi {
 
     private final UserService userService;
 
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    @Override
+    public ResponseEntity<UserResponse> createUser(UserCreateRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(userService.create(request));
     }
 
-    @GetMapping("/{id}")
-    @Transactional(readOnly = true)
-    public User getUser(@PathVariable UUID id) {
-        return userService.getUserById(id);
+    @Override
+    public ResponseEntity<UserResponse> getUserById(UUID id) {
+        return ResponseEntity.ok(userService.getById(id));
     }
 
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable UUID id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    @Override
+    public ResponseEntity<UserResponse> updateUser(UUID id, UserCreateRequest request) {
+        return ResponseEntity.ok(userService.update(id, request));
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable UUID id) {
-        userService.deleteUser(id);
+    @Override
+    public ResponseEntity<Void> deleteUser(UUID id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
+

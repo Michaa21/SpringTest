@@ -1,6 +1,5 @@
 package com.example.springtest.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +12,6 @@ public class Profile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
     private String firstName;
@@ -23,6 +21,5 @@ public class Profile {
     @JoinColumn(name = "user_id",
             nullable = false,
             unique = true)
-    @JsonIgnore
     private User user;
 }

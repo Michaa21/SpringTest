@@ -17,12 +17,15 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
-            fetch = FetchType.EAGER)
-    @JoinTable(name = "student_lesson",
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "student_lesson",
             joinColumns = @JoinColumn(name = "student_id"),
-            inverseJoinColumns = @JoinColumn(name = "lesson_id"))
+            inverseJoinColumns = @JoinColumn(name = "lesson_id")
+    )
     private Set<Lesson> lessons = new HashSet<>();
 }
+

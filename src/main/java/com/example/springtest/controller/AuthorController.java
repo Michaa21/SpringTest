@@ -1,35 +1,41 @@
 package com.example.springtest.controller;
 
-import com.example.springtest.model.Author;
+import com.example.springtest.api.AuthorApi;
+import com.example.springtest.api.model.AuthorCreateRequest;
+import com.example.springtest.api.model.AuthorResponse;
 import com.example.springtest.service.AuthorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/authors")
 @RequiredArgsConstructor
-public class AuthorController {
+public class AuthorController implements AuthorApi {
 
     private final AuthorService authorService;
 
-    @PostMapping
-    public Author createAuthor(@RequestBody Author author) {
-        return authorService.createAuthor(author);
+    @Override
+    public ResponseEntity<AuthorResponse> createAuthor(AuthorCreateRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(authorService.create(request));
     }
 
-    @GetMapping("/{id}")
-    public Author getAuthor(@PathVariable Long id) {
-        return authorService.getAuthorById(id);
+    @Override
+    public ResponseEntity<AuthorResponse> getAuthorById(Long id) {
+        return ResponseEntity.ok(authorService.getById(id));
     }
 
-    @PutMapping("/{id}")
-    public Author updateAuthor(@PathVariable Long id,
-                               @RequestBody Author author) {
-        return authorService.updateAuthor(id, author);
+    @Override
+    public ResponseEntity<AuthorResponse> updateAuthor(Long id, AuthorCreateRequest request) {
+        return ResponseEntity.ok(authorService.update(id, request));
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteAuthor(@PathVariable Long id) {
-        authorService.deleteAuthor(id);
+    @Override
+    public ResponseEntity<Void> deleteAuthor(Long id) {
+        authorService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
+

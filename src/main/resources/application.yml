@@ -22,3 +22,10 @@ spring:
     locations: classpath:db/migration
     schemas: spring_test
     default-schema: spring_test
+
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

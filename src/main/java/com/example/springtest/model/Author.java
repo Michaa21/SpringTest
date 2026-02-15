@@ -3,7 +3,6 @@ package com.example.springtest.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,11 +16,12 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
     @OneToMany(mappedBy = "author",
             cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
+            orphanRemoval = true)
     private List<Book> books = new ArrayList<>();
 }
+

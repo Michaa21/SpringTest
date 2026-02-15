@@ -1,58 +1,55 @@
 package com.example.springtest.service;
 
-import com.example.springtest.model.Profile;
+import com.example.springtest.api.model.UserCreateRequest;
+import com.example.springtest.api.model.UserResponse;
+import com.example.springtest.exception.UserNotFoundException;
+import com.example.springtest.mapper.UserApiMapper;
 import com.example.springtest.model.User;
 import com.example.springtest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserApiMapper userApiMapper;
 
-    public User createUser(User user) {
-        if (user.getProfile() != null) {
-            user.getProfile().setUser(user);
-        }
-        return userRepository.save(user);
+
+    @Transactional
+    public UserResponse create(UserCreateRequest request) {
+        User user = userApiMapper.toEntity(request);
+        User saved = userRepository.save(user);
+        return userApiMapper.toResponse(saved);
     }
 
     @Transactional(readOnly = true)
-    public User getUserById(UUID id) {
+    public UserResponse getById(UUID id) {
+        return userApiMapper.toResponse(findUser(id));
+    }
+
+    @Transactional
+    public UserResponse update(UUID id, UserCreateRequest request) {
+        User user = findUser(id);
+        user.setUsername(request.getUsername());
+        user.getProfile().setFirstName(request.getProfile().getFirstName());
+        user.getProfile().setLastName(request.getProfile().getLastName());
+        return userApiMapper.toResponse(user);
+    }
+
+
+    @Transactional
+    public void delete(UUID id) {
+        userRepository.delete(findUser(id));
+    }
+
+    public User findUser(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Пользователь с id " + id +
-                        " не найден"));
-    }
-
-    public User updateUser(UUID id, User userDetails) {
-
-        User user = getUserById(id);
-
-        if (userDetails.getUsername() != null) {
-            user.setUsername(userDetails.getUsername());
-        }
-
-        if (userDetails.getProfile() != null) {
-            Profile profile = user.getProfile();
-            if (profile == null) {
-                profile = new Profile();
-                profile.setUser(user);
-                user.setProfile(profile);
-            }
-            profile.setFirstName(userDetails.getProfile().getFirstName());
-            profile.setLastName(userDetails.getProfile().getLastName());
-        }
-        return user;
-    }
-
-    public void deleteUser(UUID id) {
-        userRepository.delete(getUserById(id));
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 }
+
