@@ -10,17 +10,13 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = ProfileMapper.class)
 public interface UserApiMapper {
-
-    @Mapping(target = "id", ignore = true)
     User toEntity(UserCreateRequest request);
 
     UserResponse toResponse(User user);
 
     @AfterMapping
     default void linkProfile(@MappingTarget User user) {
-        if (user.getProfile() != null) {
-            user.getProfile().setUser(user);
-        }
+        user.getProfile().setUser(user);
     }
 }
 
