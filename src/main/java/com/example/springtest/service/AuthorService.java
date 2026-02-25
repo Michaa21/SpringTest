@@ -3,7 +3,7 @@ package com.example.springtest.service;
 import com.example.springtest.api.model.AuthorCreateRequest;
 import com.example.springtest.api.model.AuthorResponse;
 import com.example.springtest.api.model.BookCreateRequest;
-import com.example.springtest.exception.AuthorNotFoundException;
+import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.AuthorApiMapper;
 import com.example.springtest.model.Author;
 import com.example.springtest.model.Book;
@@ -53,7 +53,7 @@ public class AuthorService {
 
     private Author findAuthor(Long id) {
         return authorRepository.findById(id)
-                .orElseThrow(() -> new AuthorNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException("Author", id));
     }
 }
 

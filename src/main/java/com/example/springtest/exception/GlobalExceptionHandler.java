@@ -1,6 +1,7 @@
 package com.example.springtest.exception;
 
 import com.example.springtest.api.model.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,26 +9,44 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.OffsetDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleEntityNotFound(
             EntityNotFoundException exception) {
-        ErrorResponse error = new ErrorResponse();
-        error.setStatus(HttpStatus.NOT_FOUND.value());
-        error.setMessage(exception.getMessage());
-        error.setTimestamp(OffsetDateTime.now());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        log.warn("Entity not found: {}", exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(buildError(exception.getMessage(), HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(
             BadRequestException exception) {
+        log.warn("Bad request: {}", exception.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(buildError(exception.getMessage(), HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleUnexpected(
+            Exception exception) {
+        log.error("Unexpected error", exception);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildError("Internal server error",
+                        HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+
+    private ErrorResponse buildError(String message, HttpStatus status) {
         ErrorResponse error = new ErrorResponse();
-        error.setStatus(HttpStatus.BAD_REQUEST.value());
-        error.setMessage(exception.getMessage());
+        error.setStatus(status.value());
+        error.setMessage(message);
         error.setTimestamp(OffsetDateTime.now());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        return error;
     }
 }

@@ -2,7 +2,7 @@ package com.example.springtest.service;
 
 import com.example.springtest.api.model.UserCreateRequest;
 import com.example.springtest.api.model.UserResponse;
-import com.example.springtest.exception.UserNotFoundException;
+import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.UserApiMapper;
 import com.example.springtest.model.User;
 import com.example.springtest.repository.UserRepository;
@@ -47,9 +47,10 @@ public class UserService {
         userRepository.delete(findUser(id));
     }
 
+    @Transactional
     public User findUser(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException("User", id));
     }
 }
 

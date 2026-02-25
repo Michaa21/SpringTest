@@ -3,7 +3,7 @@ package com.example.springtest.service;
 import com.example.springtest.api.model.LessonCreateRequest;
 import com.example.springtest.api.model.StudentCreateRequest;
 import com.example.springtest.api.model.StudentResponse;
-import com.example.springtest.exception.StudentNotFoundException;
+import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.StudentApiMapper;
 import com.example.springtest.model.Lesson;
 import com.example.springtest.model.Student;
@@ -52,6 +52,6 @@ public class StudentService {
 
     private Student findStudent(Long id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException(id));
+                .orElseThrow(() -> new EntityNotFoundException("Student", id));
     }
 }
