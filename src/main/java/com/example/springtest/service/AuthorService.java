@@ -2,11 +2,9 @@ package com.example.springtest.service;
 
 import com.example.springtest.api.model.AuthorCreateRequest;
 import com.example.springtest.api.model.AuthorResponse;
-import com.example.springtest.api.model.BookCreateRequest;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.AuthorApiMapper;
 import com.example.springtest.model.Author;
-import com.example.springtest.model.Book;
 import com.example.springtest.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,15 +33,15 @@ public class AuthorService {
     @Transactional
     public AuthorResponse update(Long id, AuthorCreateRequest request) {
         Author author = findAuthor(id);
-        author.setName(request.getName());
-        author.getBooks().clear();
+        authorApiMapper.updateFromRequest(request, author);
+        /*author.getBooks().clear();
         for (BookCreateRequest bookDto : request.getBooks()) {
             Book book = new Book();
             book.setTitle(bookDto.getTitle());
             book.setAuthor(author);
             author.getBooks().add(book);
-        }
-        return authorApiMapper.toResponse(authorRepository.save(author));
+        }*/
+        return authorApiMapper.toResponse(author);
     }
 
     @Transactional
@@ -52,7 +50,7 @@ public class AuthorService {
     }
 
     private Author findAuthor(Long id) {
-        return authorRepository.findById(id)
+        return authorRepository.findWithBooksById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Author", id));
     }
 }
