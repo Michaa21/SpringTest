@@ -76,7 +76,8 @@ openApiGenerate {
             interfaceOnly : "true",
             useTags       : "true",
             useSpringBoot3: "true",
-            sourceFolder  : ""
+            sourceFolder  : "",
+            hideGenerationTimestamp: "true"
     ])
 }
 

@@ -13,6 +13,7 @@ import org.mapstruct.MappingTarget;
 public interface AuthorApiMapper {
     @Mapping(target = "id", ignore = true)
     Author toEntity(AuthorCreateRequest request);
+
     AuthorResponse toResponse(Author author);
 
     @AfterMapping
@@ -24,4 +25,6 @@ public interface AuthorApiMapper {
         }
     }
 
+    @Mapping(target = "id", ignore = true)
+    void updateFromRequest(AuthorCreateRequest request, @MappingTarget Author author);
 }
