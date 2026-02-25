@@ -5,7 +5,6 @@ import com.example.springtest.api.model.UserResponse;
 import com.example.springtest.model.User;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = ProfileMapper.class)

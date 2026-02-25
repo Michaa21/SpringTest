@@ -47,7 +47,6 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
 
-
     // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
@@ -63,23 +62,23 @@ tasks.named('test') {
 openApiGenerate {
     generatorName.set("spring")
     inputSpec.set(layout.projectDirectory.file("src/main/resources/openapi.yaml").asFile.path)
-    outputDir.set(layout.buildDirectory.dir("generated").get().asFile.path)
+    outputDir.set("$projectDir/src/main/java")
     apiPackage.set("com.example.springtest.api")
     modelPackage.set("com.example.springtest.api.model")
+
+    globalProperties.set([
+            apis    : "",
+            models  : "",
+            supportingFiles : "false"
+    ])
+
     configOptions.set([
             interfaceOnly : "true",
             useTags       : "true",
-            useSpringBoot3: "true"
+            useSpringBoot3: "true",
+            sourceFolder  : ""
     ])
 }
 
 // Генерация OpenAPI перед компиляцией
 compileJava.dependsOn tasks.openApiGenerate
-
-sourceSets {
-    main {
-        java {
-            srcDir(layout.buildDirectory.dir("generated/src/main/java"))
-        }
-    }
-}
