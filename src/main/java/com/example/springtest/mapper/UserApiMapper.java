@@ -7,7 +7,7 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = ProfileMapper.class)
+@Mapper(componentModel = "spring")
 public interface UserApiMapper {
     User toEntity(UserCreateRequest request);
 
@@ -15,7 +15,11 @@ public interface UserApiMapper {
 
     @AfterMapping
     default void linkProfile(@MappingTarget User user) {
-        user.getProfile().setUser(user);
+        if (user.getProfile() != null) {
+            user.getProfile().setUser(user);
+        }
     }
+
+    void updateFromRequest(UserCreateRequest request, @MappingTarget User user);
 }
 

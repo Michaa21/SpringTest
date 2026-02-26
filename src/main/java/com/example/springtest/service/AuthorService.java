@@ -34,13 +34,6 @@ public class AuthorService {
     public AuthorResponse update(Long id, AuthorCreateRequest request) {
         Author author = findAuthor(id);
         authorApiMapper.updateFromRequest(request, author);
-        /*author.getBooks().clear();
-        for (BookCreateRequest bookDto : request.getBooks()) {
-            Book book = new Book();
-            book.setTitle(bookDto.getTitle());
-            book.setAuthor(author);
-            author.getBooks().add(book);
-        }*/
         return authorApiMapper.toResponse(author);
     }
 
