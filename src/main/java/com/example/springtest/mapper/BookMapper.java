@@ -2,7 +2,7 @@ package com.example.springtest.mapper;
 
 import com.example.springtest.api.model.BookCreateRequest;
 import com.example.springtest.api.model.BookResponse;
-import com.example.springtest.model.Book;
+import com.example.springtest.domain.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

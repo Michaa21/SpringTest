@@ -1,6 +1,6 @@
 package com.example.springtest.repository;
 
-import com.example.springtest.model.Author;
+import com.example.springtest.domain.Author;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 

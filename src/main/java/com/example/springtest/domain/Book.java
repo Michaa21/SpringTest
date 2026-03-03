@@ -1,4 +1,4 @@
-    package com.example.springtest.model;
+    package com.example.springtest.domain;
 
     import jakarta.persistence.*;
     import lombok.Getter;

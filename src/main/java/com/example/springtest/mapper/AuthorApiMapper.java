@@ -2,8 +2,8 @@ package com.example.springtest.mapper;
 
 import com.example.springtest.api.model.AuthorCreateRequest;
 import com.example.springtest.api.model.AuthorResponse;
-import com.example.springtest.model.Author;
-import com.example.springtest.model.Book;
+import com.example.springtest.domain.Author;
+import com.example.springtest.domain.Book;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -2,7 +2,7 @@ package com.example.springtest.mapper;
 
 import com.example.springtest.api.model.StudentCreateRequest;
 import com.example.springtest.api.model.StudentResponse;
-import com.example.springtest.model.Student;
+import com.example.springtest.domain.Student;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

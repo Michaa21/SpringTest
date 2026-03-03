@@ -2,7 +2,7 @@
 
     import com.example.springtest.api.model.ProfileRequest;
     import com.example.springtest.api.model.ProfileResponse;
-    import com.example.springtest.model.Profile;
+    import com.example.springtest.domain.Profile;
     import org.mapstruct.Mapper;
     import org.mapstruct.MappingTarget;
 

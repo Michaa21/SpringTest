@@ -4,7 +4,7 @@ import com.example.springtest.api.model.AuthorCreateRequest;
 import com.example.springtest.api.model.AuthorResponse;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.AuthorApiMapper;
-import com.example.springtest.model.Author;
+import com.example.springtest.domain.Author;
 import com.example.springtest.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
