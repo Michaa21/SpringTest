@@ -1,7 +1,7 @@
 package com.example.springtest.mapper;
 
-import com.example.springtest.api.model.AuthorCreateRequest;
-import com.example.springtest.api.model.AuthorResponse;
+import com.example.springtest.api.dto.request.AuthorCreateRequest;
+import com.example.springtest.api.dto.response.AuthorResponse;
 import com.example.springtest.domain.Author;
 import com.example.springtest.domain.Book;
 import org.mapstruct.AfterMapping;
@@ -18,11 +18,9 @@ public interface AuthorApiMapper {
 
     @AfterMapping
     default void linkBooks(@MappingTarget Author author) {
-        if (author.getBooks() != null) {
             for (Book book : author.getBooks()) {
                 book.setAuthor(author);
             }
-        }
     }
 
     @Mapping(target = "id", ignore = true)

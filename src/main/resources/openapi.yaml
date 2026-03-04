@@ -353,6 +353,8 @@ components:
       properties:
         username:
           type: string
+          minLength: 1
+          maxLength: 100
         profile:
           $ref: '#/components/schemas/ProfileRequest'
 
@@ -362,8 +364,13 @@ components:
       properties:
         firstName:
           type: string
+          minLength: 1
+          maxLength: 100
+
         lastName:
           type: string
+          minLength: 1
+          maxLength: 100
 
     UserResponse:
       type: object
@@ -387,12 +394,15 @@ components:
     # AUTHOR
     AuthorCreateRequest:
       type: object
-      required: [ name ]
+      required: [ name, books ]
       properties:
         name:
           type: string
+          minLength: 1
+          maxLength: 100
         books:
           type: array
+          minItems: 1
           items:
             $ref: '#/components/schemas/BookCreateRequest'
 
@@ -402,6 +412,8 @@ components:
       properties:
         title:
           type: string
+          minLength: 1
+          maxLength: 100
 
     AuthorResponse:
       type: object
@@ -432,6 +444,8 @@ components:
       properties:
         name:
           type: string
+          minLength: 1
+          maxLength: 100
         lessons:
           type: array
           items:
@@ -444,6 +458,8 @@ components:
       properties:
         title:
           type: string
+          minLength: 1
+          maxLength: 100
 
 
     StudentResponse:
