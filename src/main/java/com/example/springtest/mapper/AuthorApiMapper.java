@@ -4,12 +4,9 @@ import com.example.springtest.api.dto.request.AuthorCreateRequest;
 import com.example.springtest.api.dto.response.AuthorResponse;
 import com.example.springtest.domain.Author;
 import com.example.springtest.domain.Book;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = BookMapper.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = BookMapper.class)
 public interface AuthorApiMapper {
     @Mapping(target = "id", ignore = true)
     Author toEntity(AuthorCreateRequest request);
