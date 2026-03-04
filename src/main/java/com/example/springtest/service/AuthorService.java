@@ -1,7 +1,7 @@
 package com.example.springtest.service;
 
-import com.example.springtest.api.model.AuthorCreateRequest;
-import com.example.springtest.api.model.AuthorResponse;
+import com.example.springtest.api.dto.request.AuthorCreateRequest;
+import com.example.springtest.api.dto.response.AuthorResponse;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.AuthorApiMapper;
 import com.example.springtest.domain.Author;
@@ -42,7 +42,7 @@ public class AuthorService {
         authorRepository.delete(findAuthor(id));
     }
 
-    private Author findAuthor(Long id) {
+    public Author findAuthor(Long id) {
         return authorRepository.findWithBooksById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Author", id));
     }
