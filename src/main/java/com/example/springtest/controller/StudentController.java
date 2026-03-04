@@ -1,9 +1,10 @@
 package com.example.springtest.controller;
 
 import com.example.springtest.api.StudentApi;
-import com.example.springtest.api.model.StudentCreateRequest;
-import com.example.springtest.api.model.StudentResponse;
+import com.example.springtest.api.dto.request.StudentCreateRequest;
+import com.example.springtest.api.dto.response.StudentResponse;
 import com.example.springtest.service.StudentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

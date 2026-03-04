@@ -1,8 +1,8 @@
 package com.example.springtest.controller;
 
 import com.example.springtest.api.AuthorApi;
-import com.example.springtest.api.model.AuthorCreateRequest;
-import com.example.springtest.api.model.AuthorResponse;
+import com.example.springtest.api.dto.request.AuthorCreateRequest;
+import com.example.springtest.api.dto.response.AuthorResponse;
 import com.example.springtest.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

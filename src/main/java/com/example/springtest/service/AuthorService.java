@@ -44,6 +44,7 @@ public class AuthorService {
         authorRepository.delete(findAuthor(id));
     }
 
+    @Transactional
     public Author findAuthor(Long id) {
         return authorRepository.findWithBooksById(id)
                 .orElseThrow(() -> {

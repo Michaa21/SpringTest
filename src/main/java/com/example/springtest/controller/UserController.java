@@ -1,8 +1,8 @@
 package com.example.springtest.controller;
 
 import com.example.springtest.api.UserApi;
-import com.example.springtest.api.model.UserCreateRequest;
-import com.example.springtest.api.model.UserResponse;
+import com.example.springtest.api.dto.request.UserCreateRequest;
+import com.example.springtest.api.dto.response.UserResponse;
 import com.example.springtest.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,7 @@ public class UserController implements UserApi {
     private final UserService userService;
 
     @Override
-    public ResponseEntity<UserResponse> createUser(@Valid
-                                                   @RequestBody UserCreateRequest request) {
+    public ResponseEntity<UserResponse> createUser(UserCreateRequest request) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userService.create(request));

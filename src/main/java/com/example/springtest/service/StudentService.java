@@ -52,6 +52,7 @@ public class StudentService {
         studentRepository.delete(findStudent(id));
     }
 
+    @Transactional
     public Student findStudent(Long id) {
         return studentRepository.findById(id)
                 .orElseThrow(() -> {
