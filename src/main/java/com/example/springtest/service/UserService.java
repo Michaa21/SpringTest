@@ -1,7 +1,7 @@
 package com.example.springtest.service;
 
-import com.example.springtest.api.model.UserCreateRequest;
-import com.example.springtest.api.model.UserResponse;
+import com.example.springtest.api.dto.request.UserCreateRequest;
+import com.example.springtest.api.dto.response.UserResponse;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.ProfileMapper;
 import com.example.springtest.mapper.UserApiMapper;
@@ -9,11 +9,13 @@ import com.example.springtest.domain.Profile;
 import com.example.springtest.domain.User;
 import com.example.springtest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -60,7 +62,10 @@ public class UserService {
     @Transactional
     public User findUser(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User", id));
+                .orElseThrow(() -> {
+                    log.warn("User with id {} not found", id);
+                    return new EntityNotFoundException("User", id);
+                });
     }
 }
 

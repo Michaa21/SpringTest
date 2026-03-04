@@ -9,9 +9,11 @@ import com.example.springtest.domain.Lesson;
 import com.example.springtest.domain.Student;
 import com.example.springtest.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StudentService {
@@ -52,6 +54,9 @@ public class StudentService {
 
     public Student findStudent(Long id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Student", id));
+                .orElseThrow(() -> {
+                    log.warn("Student with id {} not found", id);
+                    return new EntityNotFoundException("Student", id);
+                });
     }
 }

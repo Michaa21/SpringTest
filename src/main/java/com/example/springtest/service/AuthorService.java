@@ -7,9 +7,11 @@ import com.example.springtest.mapper.AuthorApiMapper;
 import com.example.springtest.domain.Author;
 import com.example.springtest.repository.AuthorRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthorService {
@@ -44,7 +46,10 @@ public class AuthorService {
 
     public Author findAuthor(Long id) {
         return authorRepository.findWithBooksById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Author", id));
+                .orElseThrow(() -> {
+                    log.warn("Author with id {} not found", id);
+                    return new EntityNotFoundException("Author", id);
+                });
     }
 }
 
