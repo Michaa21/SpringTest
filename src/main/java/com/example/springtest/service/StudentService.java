@@ -1,8 +1,8 @@
 package com.example.springtest.service;
 
-import com.example.springtest.api.model.LessonCreateRequest;
-import com.example.springtest.api.model.StudentCreateRequest;
-import com.example.springtest.api.model.StudentResponse;
+import com.example.springtest.api.dto.request.LessonCreateRequest;
+import com.example.springtest.api.dto.request.StudentCreateRequest;
+import com.example.springtest.api.dto.response.StudentResponse;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.StudentApiMapper;
 import com.example.springtest.domain.Lesson;
@@ -50,7 +50,7 @@ public class StudentService {
         studentRepository.delete(findStudent(id));
     }
 
-    private Student findStudent(Long id) {
+    public Student findStudent(Long id) {
         return studentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Student", id));
     }
