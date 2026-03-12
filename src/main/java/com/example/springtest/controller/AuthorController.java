@@ -5,7 +5,6 @@ import com.example.springtest.api.dto.request.AuthorCreateRequest;
 import com.example.springtest.api.dto.response.AuthorResponse;
 import com.example.springtest.service.AuthorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,8 +17,7 @@ public class AuthorController implements AuthorApi {
     @Override
     public ResponseEntity<AuthorResponse> createAuthor(AuthorCreateRequest request) {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(authorService.create(request));
+                .ok(authorService.create(request));
     }
 
     @Override

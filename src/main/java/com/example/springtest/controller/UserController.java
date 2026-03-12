@@ -4,11 +4,8 @@ import com.example.springtest.api.UserApi;
 import com.example.springtest.api.dto.request.UserCreateRequest;
 import com.example.springtest.api.dto.response.UserResponse;
 import com.example.springtest.service.UserService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -22,8 +19,7 @@ public class UserController implements UserApi {
     @Override
     public ResponseEntity<UserResponse> createUser(UserCreateRequest request) {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userService.create(request));
+                .ok(userService.create(request));
     }
 
     @Override

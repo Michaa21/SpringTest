@@ -4,9 +4,7 @@ import com.example.springtest.api.StudentApi;
 import com.example.springtest.api.dto.request.StudentCreateRequest;
 import com.example.springtest.api.dto.response.StudentResponse;
 import com.example.springtest.service.StudentService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,12 +14,11 @@ public class StudentController implements StudentApi {
 
     private final StudentService studentService;
 
-    @Override
-    public ResponseEntity<StudentResponse> createStudent(StudentCreateRequest request) {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(studentService.create(request));
-    }
+        @Override
+        public ResponseEntity<StudentResponse> createStudent(StudentCreateRequest request) {
+            return ResponseEntity
+                    .ok(studentService.create(request));
+        }
 
     @Override
     public ResponseEntity<StudentResponse> getStudentById(Long id) {

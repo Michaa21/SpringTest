@@ -21,6 +21,6 @@ public interface UserApiMapper {
         }
     }
 
-    void updateFromRequest(UserCreateRequest request, @MappingTarget User user);
+    void update(UserCreateRequest request, @MappingTarget User user);
 }
 
