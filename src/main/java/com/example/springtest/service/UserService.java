@@ -24,6 +24,7 @@ public class UserService {
     @Transactional
     public UserResponse create(UserCreateRequest request) {
         User user = userApiMapper.toEntity(request);
+        linkProfile(user);
         User saved = userRepository.save(user);
         return userApiMapper.toResponse(saved);
     }
@@ -37,6 +38,7 @@ public class UserService {
     public UserResponse update(UUID id, UserCreateRequest request) {
         User user = findUser(id);
         userApiMapper.update(request, user);
+        linkProfile(user);
         return userApiMapper.toResponse(user);
     }
 
@@ -52,6 +54,13 @@ public class UserService {
                     log.warn("User with id {} not found", id);
                     return new EntityNotFoundException("User", id);
                 });
+    }
+
+    private void linkProfile(User user){
+        if (user.getProfile() == null){
+            return;
+        }
+        user.getProfile().setUser(user);
     }
 }
 
