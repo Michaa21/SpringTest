@@ -14,11 +14,10 @@ public class StudentController implements StudentApi {
 
     private final StudentService studentService;
 
-        @Override
-        public ResponseEntity<StudentResponse> createStudent(StudentCreateRequest request) {
-            return ResponseEntity
-                    .ok(studentService.create(request));
-        }
+    @Override
+    public ResponseEntity<StudentResponse> createStudent(StudentCreateRequest request) {
+        return ResponseEntity.ok(studentService.create(request));
+    }
 
     @Override
     public ResponseEntity<StudentResponse> getStudentById(Long id) {
