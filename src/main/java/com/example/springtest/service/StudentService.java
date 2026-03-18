@@ -13,9 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,8 +30,12 @@ public class StudentService {
     public StudentResponse create(StudentCreateRequest request) {
         Student student = studentApiMapper.toEntity(request);
 
-        if (request.getLessonIds() != null && !request.getLessonIds().isEmpty()) {
-            Set<Lesson> lessons = getLessonsOrThrow(request.getLessonIds());
+        if (request.getLessons() != null && !request.getLessons().isEmpty()) {
+            Set<Lesson> lessons = request.getLessons()
+                    .stream()
+                    .map(lr -> getOrCreateLesson(lr.getTitle()))
+                    .collect(Collectors.toSet());
+
             student.setLessons(lessons);
         }
 
@@ -40,17 +44,22 @@ public class StudentService {
     }
 
     @Transactional(readOnly = true)
-    public StudentResponse getById(Long id) {
+    public StudentResponse getById(UUID id) {
         return studentApiMapper.toResponse(findStudent(id));
     }
 
     @Transactional
-    public StudentResponse update(Long id, StudentCreateRequest request) {
+    public StudentResponse update(UUID id, StudentCreateRequest request) {
         Student student = findStudent(id);
+
         studentApiMapper.update(request, student);
 
-        if (request.getLessonIds() != null) {
-            Set<Lesson> lessons = getLessonsOrThrow(request.getLessonIds());
+        if (request.getLessons() != null) {
+            Set<Lesson> lessons = request.getLessons()
+                    .stream()
+                    .map(lr -> getOrCreateLesson(lr.getTitle()))
+                    .collect(Collectors.toSet());
+
             student.setLessons(lessons);
         }
 
@@ -59,12 +68,12 @@ public class StudentService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(UUID id) {
         studentRepository.delete(findStudent(id));
     }
 
     @Transactional
-    public Student findStudent(Long id) {
+    public Student findStudent(UUID id) {
         return studentRepository.findWithLessonsById(id)
                 .orElseThrow(() -> {
                     log.warn("Student with id {} not found", id);
@@ -72,13 +81,9 @@ public class StudentService {
                 });
     }
 
-    public Set<Lesson> getLessonsOrThrow(Iterable<Long> lessonIds) {
-        Set<Lesson> lessons = new HashSet<>(lessonRepository.findAllById(lessonIds));
-
-        int requestedSize = ((Collection<?>) lessonIds).size();
-        if (lessons.size() != requestedSize) {
-            throw new EntityNotFoundException("Lesson", lessonIds);
-        }
-        return lessons;
+    private Lesson getOrCreateLesson(String title) {
+        String normalized = title.trim().toLowerCase();
+        return lessonRepository.findByTitleIgnoreCase(normalized)
+                .orElseGet(() -> lessonRepository.save(new Lesson(normalized)));
     }
 }

@@ -1,6 +1,8 @@
-package com.example.springtest.exception;
+package com.example.springtest.controller.advice;
 
 import com.example.springtest.api.dto.response.ErrorResponse;
+import com.example.springtest.exception.BadRequestException;
+import com.example.springtest.exception.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(
-            MethodArgumentNotValidException exception){
+            MethodArgumentNotValidException exception) {
         String errorMessage = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()

@@ -8,7 +8,7 @@ CREATE TABLE spring_test.users
 
 CREATE TABLE spring_test.profiles
 (
-    id         BIGSERIAL PRIMARY KEY,
+    id         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     first_name VARCHAR(100),
     last_name  VARCHAR(100),
     user_id    UUID NOT NULL UNIQUE,
@@ -21,15 +21,15 @@ CREATE TABLE spring_test.profiles
 
 CREATE TABLE spring_test.authors
 (
-    id   BIGSERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE spring_test.books
 (
-    id        BIGSERIAL PRIMARY KEY,
-    title     VARCHAR(100) NOT NULL,
-    author_id BIGINT       NOT NULL,
+    id        UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title     VARCHAR(100) NOT NULL UNIQUE,
+    author_id UUID         NOT NULL,
 
     CONSTRAINT fk_book_author
         FOREIGN KEY (author_id)
@@ -39,20 +39,20 @@ CREATE TABLE spring_test.books
 
 CREATE TABLE spring_test.students
 (
-    id   BIGSERIAL PRIMARY KEY,
+    id   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE spring_test.lessons
 (
-    id    BIGSERIAL PRIMARY KEY,
-    title VARCHAR(100) NOT NULL
+    id    UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE spring_test.student_lesson
 (
-    student_id BIGINT NOT NULL,
-    lesson_id  BIGINT NOT NULL,
+    student_id UUID NOT NULL,
+    lesson_id  UUID NOT NULL,
 
     CONSTRAINT pk_student_lesson
         PRIMARY KEY (student_id, lesson_id),

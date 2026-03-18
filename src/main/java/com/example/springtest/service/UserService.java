@@ -49,7 +49,7 @@ public class UserService {
 
     @Transactional
     public User findUser(UUID id) {
-        return userRepository.findById(id)
+        return userRepository.findWithProfileById(id)
                 .orElseThrow(() -> {
                     log.warn("User with id {} not found", id);
                     return new EntityNotFoundException("User", id);

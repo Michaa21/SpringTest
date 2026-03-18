@@ -1,24 +1,26 @@
-    package com.example.springtest.domain;
+package com.example.springtest.domain;
 
-    import jakarta.persistence.*;
-    import lombok.Getter;
-    import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-    @Entity
-    @Table(name = "books", schema = "spring_test")
-    @Getter
-    @Setter
-    public class Book {
+import java.util.UUID;
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+@Entity
+@Table(name = "books", schema = "spring_test")
+@Getter
+@Setter
+public class Book {
 
-        @Column(nullable = false)
-        private String title;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
-        @ManyToOne(fetch = FetchType.LAZY)
-        @JoinColumn(name = "author_id", nullable = false)
-        private Author author;
-    }
+    @Column(nullable = false)
+    private String title;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private Author author;
+}
 

@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public interface StudentRepository extends JpaRepository<Student, Long> {
+public interface StudentRepository extends JpaRepository<Student, UUID> {
     @EntityGraph(attributePaths = "lessons")
-    Optional<Student> findWithLessonsById(Long id);
+    Optional<Student> findWithLessonsById(UUID id);
 }

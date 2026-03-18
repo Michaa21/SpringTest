@@ -12,10 +12,11 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         default_schema: spring_test
+        format_sql: true
 
   flyway:
     enabled: true
@@ -23,6 +24,9 @@ spring:
     schemas: spring_test
     default-schema: spring_test
 
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
 
 springdoc:
   api-docs:

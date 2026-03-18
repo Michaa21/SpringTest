@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 public class StudentController implements StudentApi {
@@ -20,17 +22,17 @@ public class StudentController implements StudentApi {
     }
 
     @Override
-    public ResponseEntity<StudentResponse> getStudentById(Long id) {
+    public ResponseEntity<StudentResponse> getStudentById(UUID id) {
         return ResponseEntity.ok(studentService.getById(id));
     }
 
     @Override
-    public ResponseEntity<StudentResponse> updateStudent(Long id, StudentCreateRequest request) {
+    public ResponseEntity<StudentResponse> updateStudent(UUID id, StudentCreateRequest request) {
         return ResponseEntity.ok(studentService.update(id, request));
     }
 
     @Override
-    public ResponseEntity<Void> deleteStudent(Long id) {
+    public ResponseEntity<Void> deleteStudent(UUID id) {
         studentService.delete(id);
         return ResponseEntity.noContent().build();
     }
