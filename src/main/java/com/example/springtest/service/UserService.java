@@ -56,8 +56,8 @@ public class UserService {
                 });
     }
 
-    private void linkProfile(User user){
-        if (user.getProfile() == null){
+    private void linkProfile(User user) {
+        if (user.getProfile() == null) {
             return;
         }
         user.getProfile().setUser(user);

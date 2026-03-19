@@ -10,6 +10,8 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BookMapper {
     Book toEntity(BookCreateRequest request);
+
     BookResponse toResponse(Book book);
+
     void update(BookCreateRequest request, @MappingTarget Book book);
 }
