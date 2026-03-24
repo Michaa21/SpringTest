@@ -30,14 +30,11 @@ public class StudentService {
     public StudentResponse create(StudentCreateRequest request) {
         Student student = studentApiMapper.toEntity(request);
 
-        if (request.getLessons() != null && !request.getLessons().isEmpty()) {
-            Set<Lesson> lessons = request.getLessons()
-                    .stream()
-                    .map(lr -> getOrCreateLesson(lr.getTitle()))
-                    .collect(Collectors.toSet());
-
-            student.setLessons(lessons);
-        }
+        Set<Lesson> lessons = request.getLessons()
+                .stream()
+                .map(lr -> getOrCreateLesson(lr.getTitle()))
+                .collect(Collectors.toSet());
+        student.setLessons(lessons);
 
         Student saved = studentRepository.save(student);
         return studentApiMapper.toResponse(saved);
@@ -54,14 +51,12 @@ public class StudentService {
 
         studentApiMapper.update(request, student);
 
-        if (request.getLessons() != null) {
-            Set<Lesson> lessons = request.getLessons()
-                    .stream()
-                    .map(lr -> getOrCreateLesson(lr.getTitle()))
-                    .collect(Collectors.toSet());
+        Set<Lesson> lessons = request.getLessons()
+                .stream()
+                .map(lr -> getOrCreateLesson(lr.getTitle()))
+                .collect(Collectors.toSet());
 
-            student.setLessons(lessons);
-        }
+        student.setLessons(lessons);
 
         Student saved = studentRepository.save(student);
         return studentApiMapper.toResponse(saved);

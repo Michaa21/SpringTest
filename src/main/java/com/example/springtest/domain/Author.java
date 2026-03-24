@@ -25,5 +25,10 @@ public class Author {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Book> books = new ArrayList<>();
+
+    public void addBook(Book book) {
+        books.add(book);
+        book.setAuthor(this);
+    }
 }
 

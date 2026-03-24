@@ -8,13 +8,15 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = BookMapper.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface AuthorApiMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "books", ignore = true)
     Author toEntity(AuthorCreateRequest request);
 
     AuthorResponse toResponse(Author author);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "books", ignore = true)
     void updateFromRequest(AuthorCreateRequest request, @MappingTarget Author author);
 }

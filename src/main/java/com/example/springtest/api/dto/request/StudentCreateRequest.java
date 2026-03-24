@@ -26,13 +26,13 @@ import jakarta.annotation.Generated;
  * StudentCreateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-18T13:04:20.490251100+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-24T16:08:58.617007800+05:00[Asia/Yekaterinburg]")
 public class StudentCreateRequest {
 
   private String name;
 
   @Valid
-  private List<@Valid LessonCreateRequest> lessons;
+  private List<@Valid LessonCreateRequest> lessons = new ArrayList<>();
 
   public StudentCreateRequest() {
     super();
@@ -41,8 +41,9 @@ public class StudentCreateRequest {
   /**
    * Constructor with only required parameters
    */
-  public StudentCreateRequest(String name) {
+  public StudentCreateRequest(String name, List<@Valid LessonCreateRequest> lessons) {
     this.name = name;
+    this.lessons = lessons;
   }
 
   public StudentCreateRequest name(String name) {
@@ -82,8 +83,8 @@ public class StudentCreateRequest {
    * Get lessons
    * @return lessons
   */
-  @Valid 
-  @Schema(name = "lessons", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull @Valid 
+  @Schema(name = "lessons", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("lessons")
   public List<@Valid LessonCreateRequest> getLessons() {
     return lessons;

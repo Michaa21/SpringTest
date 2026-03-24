@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,19 +31,10 @@ public class AuthorService {
     public AuthorResponse create(AuthorCreateRequest request) {
         Author author = authorApiMapper.toEntity(request);
 
-        if (request.getBooks() != null) {
-            List<Book> books = request.getBooks()
-                    .stream()
-                    .map(br -> {
-                        Book book = bookMapper.toEntity(br);
-                        book.setAuthor(author);
-                        return book;
-                    })
-                    .collect(Collectors.toList());
-
-            author.setBooks(books);
-        }
-
+        request.getBooks().forEach(br -> {
+            Book book = bookMapper.toEntity(br);
+            author.addBook(book);
+        });
         Author saved = authorRepository.save(author);
         return authorApiMapper.toResponse(saved);
     }
@@ -59,19 +51,23 @@ public class AuthorService {
 
         authorApiMapper.updateFromRequest(request, author);
 
-        if (request.getBooks() != null) {
-            author.getBooks().clear();
-
-            request.getBooks().forEach(br -> {
-                Book book = bookMapper.toEntity(br);
-                book.setAuthor(author);
-                author.getBooks().add(book);
-            });
-        }
+        request.getBooks().forEach(br -> {
+            if (br.getId() != null) {
+                Book existing = author.getBooks().stream()
+                        .filter(b -> Objects.equals(b.getId(), br.getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new EntityNotFoundException("Book", br.getId()));
+                bookMapper.update(br, existing);
+            } else {
+                Book newBook = bookMapper.toEntity(br);
+                author.addBook(newBook);
+            }
+        });
 
         Author saved = authorRepository.save(author);
         return authorApiMapper.toResponse(saved);
     }
+
 
     @Transactional
     public void delete(UUID id) {
