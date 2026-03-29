@@ -28,5 +28,24 @@ public class Student {
             inverseJoinColumns = @JoinColumn(name = "lesson_id")
     )
     private Set<Lesson> lessons = new HashSet<>();
+
+    public void addLesson(Lesson lesson) {
+        lessons.add(lesson);
+        lesson.getStudents().add(this);
+    }
+
+    public void removeLesson(Lesson lesson) {
+        lessons.remove(lesson);
+        lesson.getStudents().remove(this);
+    }
+
+    public void setLessons(Set<Lesson> lessons) {
+        for (Lesson lesson : new HashSet<>(this.lessons)) {
+            removeLesson(lesson);
+        }
+        for (Lesson lesson : lessons) {
+            addLesson(lesson);
+        }
+    }
 }
 

@@ -10,6 +10,7 @@ import com.example.springtest.repository.LessonRepository;
 import com.example.springtest.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,7 @@ public class StudentService {
 
         Set<Lesson> lessons = request.getLessons()
                 .stream()
-                .map(lr -> getOrCreateLesson(lr.getTitle()))
+                .map(lessonRequest -> getOrCreateLesson(lessonRequest.getTitle()))
                 .collect(Collectors.toSet());
         student.setLessons(lessons);
 
@@ -53,13 +54,12 @@ public class StudentService {
 
         Set<Lesson> lessons = request.getLessons()
                 .stream()
-                .map(lr -> getOrCreateLesson(lr.getTitle()))
+                .map(lessonRequest -> getOrCreateLesson(lessonRequest.getTitle()))
                 .collect(Collectors.toSet());
 
         student.setLessons(lessons);
 
-        Student saved = studentRepository.save(student);
-        return studentApiMapper.toResponse(saved);
+        return studentApiMapper.toResponse(student);
     }
 
     @Transactional
@@ -77,8 +77,15 @@ public class StudentService {
     }
 
     private Lesson getOrCreateLesson(String title) {
-        String normalized = title.trim().toLowerCase();
+        String normalized = title.trim();
         return lessonRepository.findByTitleIgnoreCase(normalized)
-                .orElseGet(() -> lessonRepository.save(new Lesson(normalized)));
+                .orElseGet(() -> {
+                    try {
+                        return lessonRepository.save(new Lesson(normalized));
+                    } catch (DataIntegrityViolationException e) {
+                        return lessonRepository.findByTitleIgnoreCase(normalized)
+                                .orElseThrow(() -> e);
+                    }
+                });
     }
 }

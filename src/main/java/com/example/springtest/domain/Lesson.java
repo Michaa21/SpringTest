@@ -3,6 +3,8 @@ package com.example.springtest.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -20,4 +22,7 @@ public class Lesson {
     @NonNull
     @Column(nullable = false)
     private String title;
+
+    @ManyToMany(mappedBy = "lessons")
+    private Set<Student> students = new HashSet<>();
 }

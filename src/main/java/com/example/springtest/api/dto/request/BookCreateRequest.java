@@ -7,7 +7,6 @@ import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -22,10 +21,8 @@ import jakarta.annotation.Generated;
  * BookCreateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-24T16:08:58.617007800+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-30T02:08:16.709576600+05:00[Asia/Yekaterinburg]")
 public class BookCreateRequest {
-
-  private UUID id;
 
   private String title;
 
@@ -38,26 +35,6 @@ public class BookCreateRequest {
    */
   public BookCreateRequest(String title) {
     this.title = title;
-  }
-
-  public BookCreateRequest id(UUID id) {
-    this.id = id;
-    return this;
-  }
-
-  /**
-   * Get id
-   * @return id
-  */
-  @Valid 
-  @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("id")
-  public UUID getId() {
-    return id;
-  }
-
-  public void setId(UUID id) {
-    this.id = id;
   }
 
   public BookCreateRequest title(String title) {
@@ -89,20 +66,18 @@ public class BookCreateRequest {
       return false;
     }
     BookCreateRequest bookCreateRequest = (BookCreateRequest) o;
-    return Objects.equals(this.id, bookCreateRequest.id) &&
-        Objects.equals(this.title, bookCreateRequest.title);
+    return Objects.equals(this.title, bookCreateRequest.title);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title);
+    return Objects.hash(title);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class BookCreateRequest {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -23,4 +23,12 @@ public class User {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private Profile profile;
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+
+        if (profile != null) {
+            profile.setUser(this);
+        }
+    }
 }

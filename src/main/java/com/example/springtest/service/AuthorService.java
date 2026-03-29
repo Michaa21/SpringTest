@@ -13,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,8 +28,8 @@ public class AuthorService {
     public AuthorResponse create(AuthorCreateRequest request) {
         Author author = authorApiMapper.toEntity(request);
 
-        request.getBooks().forEach(br -> {
-            Book book = bookMapper.toEntity(br);
+        request.getBooks().forEach(bookRequest -> {
+            Book book = bookMapper.toEntity(bookRequest);
             author.addBook(book);
         });
         Author saved = authorRepository.save(author);
@@ -51,21 +48,15 @@ public class AuthorService {
 
         authorApiMapper.updateFromRequest(request, author);
 
-        request.getBooks().forEach(br -> {
-            if (br.getId() != null) {
-                Book existing = author.getBooks().stream()
-                        .filter(b -> Objects.equals(b.getId(), br.getId()))
-                        .findFirst()
-                        .orElseThrow(() -> new EntityNotFoundException("Book", br.getId()));
-                bookMapper.update(br, existing);
-            } else {
-                Book newBook = bookMapper.toEntity(br);
-                author.addBook(newBook);
-            }
-        });
+        author.getBooks().clear();
+        // Книги полностью заменяются, так как их ID не передаются в запросе.
+        // В связи с этим список полностью пересоздаётся.
 
-        Author saved = authorRepository.save(author);
-        return authorApiMapper.toResponse(saved);
+        request.getBooks().forEach(bookRequest -> {
+            Book book = bookMapper.toEntity(bookRequest);
+            author.addBook(book);
+        });
+        return authorApiMapper.toResponse(author);
     }
 
 

@@ -46,8 +46,11 @@ CREATE TABLE spring_test.students
 CREATE TABLE spring_test.lessons
 (
     id    UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(100) NOT NULL UNIQUE
+    title VARCHAR(100) NOT NULL
 );
+
+CREATE UNIQUE INDEX uk_lessons_title_lower
+    ON spring_test.lessons (LOWER(title));
 
 CREATE TABLE spring_test.student_lesson
 (
