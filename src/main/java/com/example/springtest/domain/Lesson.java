@@ -25,4 +25,17 @@ public class Lesson {
 
     @ManyToMany(mappedBy = "lessons")
     private Set<Student> students = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Lesson)) return false;
+        Lesson lesson = (Lesson) o;
+        return id != null && id.equals(lesson.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

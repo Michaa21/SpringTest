@@ -6,11 +6,9 @@ import com.example.springtest.domain.Lesson;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.StudentApiMapper;
-import com.example.springtest.repository.LessonRepository;
 import com.example.springtest.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +23,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentApiMapper studentApiMapper;
-    private final LessonRepository lessonRepository;
+
 
     @Transactional
     public StudentResponse create(StudentCreateRequest request) {
@@ -33,7 +31,7 @@ public class StudentService {
 
         Set<Lesson> lessons = request.getLessons()
                 .stream()
-                .map(lessonRequest -> getOrCreateLesson(lessonRequest.getTitle()))
+                .map(lessonRequest -> new Lesson(lessonRequest.getTitle()))
                 .collect(Collectors.toSet());
         student.setLessons(lessons);
 
@@ -54,7 +52,7 @@ public class StudentService {
 
         Set<Lesson> lessons = request.getLessons()
                 .stream()
-                .map(lessonRequest -> getOrCreateLesson(lessonRequest.getTitle()))
+                .map(lessonRequest -> new Lesson(lessonRequest.getTitle()))
                 .collect(Collectors.toSet());
 
         student.setLessons(lessons);
@@ -73,19 +71,6 @@ public class StudentService {
                 .orElseThrow(() -> {
                     log.warn("Student with id {} not found", id);
                     return new EntityNotFoundException("Student", id);
-                });
-    }
-
-    private Lesson getOrCreateLesson(String title) {
-        String normalized = title.trim();
-        return lessonRepository.findByTitleIgnoreCase(normalized)
-                .orElseGet(() -> {
-                    try {
-                        return lessonRepository.save(new Lesson(normalized));
-                    } catch (DataIntegrityViolationException e) {
-                        return lessonRepository.findByTitleIgnoreCase(normalized)
-                                .orElseThrow(() -> e);
-                    }
                 });
     }
 }
