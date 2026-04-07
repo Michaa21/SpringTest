@@ -27,7 +27,10 @@ public class ExternalServiceCaller {
     )
     public String getExtra(UUID id) {
         log.info("Calling external service for id={}", id);
-        return externalStudentClient.getStudentExtraInfo(id.toString());
+
+        return externalStudentClient
+                .getStudentExtraInfo(id.toString())
+                .getExtraInfo();
     }
 
     public String getExtraFallback(UUID id, Exception ex) {

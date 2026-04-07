@@ -45,18 +45,18 @@ public class StudentServiceTest {
         when(studentRepository.findWithLessonsById(id))
                 .thenReturn(Optional.of(student));
 
-        when(studentApiMapper.toResponse(student))
-                .thenReturn(response);
-
         when(externalServiceCaller.getExtra(id))
                 .thenReturn("extra");
+
+        when(studentApiMapper.toResponse(student, "extra"))
+                .thenReturn(response);
 
         StudentResponse result = studentService.getById(id);
 
         assertNotNull(result);
         verify(studentRepository).findWithLessonsById(id);
-        verify(studentApiMapper).toResponse(student);
         verify(externalServiceCaller).getExtra(id);
+        verify(studentApiMapper).toResponse(student, "extra");
     }
 
     @Test

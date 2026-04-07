@@ -1,7 +1,9 @@
 package com.example.springtest.service;
 
 import com.example.springtest.api.dto.request.StudentCreateRequest;
+import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
+import com.example.springtest.client.ExternalStudentClient;
 import com.example.springtest.domain.Lesson;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
@@ -27,7 +29,6 @@ public class StudentService {
     private final StudentApiMapper studentApiMapper;
     private final ExternalServiceCaller externalServiceCaller;
 
-
     @Transactional
     public StudentResponse create(StudentCreateRequest request) {
         Student student = studentApiMapper.toEntity(request);
@@ -42,16 +43,15 @@ public class StudentService {
         return studentApiMapper.toResponse(saved);
     }
 
-    @Cacheable("students")
+    @Cacheable(value = "students", key = "#id")
     @Transactional(readOnly = true)
     public StudentResponse getById(UUID id) {
 
         Student student = findStudent(id);
 
         String extra = externalServiceCaller.getExtra(id);
-        log.info("EXTRA = {}", extra);
 
-        return studentApiMapper.toResponse(student);
+        return studentApiMapper.toResponse(student, extra);
     }
 
     @CacheEvict(value = "students", key = "#id")

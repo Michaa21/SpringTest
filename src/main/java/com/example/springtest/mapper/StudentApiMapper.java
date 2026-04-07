@@ -15,6 +15,9 @@ public interface StudentApiMapper {
 
     StudentResponse toResponse(Student student);
 
+    @Mapping(target = "extra", source = "extra")
+    StudentResponse toResponse(Student student, String extra);
+
     @Mapping(target = "id", ignore = true)
     void update(StudentCreateRequest request, @MappingTarget Student student);
 }
