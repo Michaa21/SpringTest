@@ -19,7 +19,25 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.3"
+    }
+}
+
 dependencies {
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Feign
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    // Retry
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Circuit Breaker
+    implementation 'io.github.resilience4j:resilience4j-spring-boot3'
 
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -37,8 +55,6 @@ dependencies {
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    // MapStruct
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
     // OpenAPI
@@ -46,10 +62,8 @@ dependencies {
     implementation 'io.swagger.core.v3:swagger-annotations:2.2.20'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 
-
-    // Testing
+    // Tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
     testImplementation platform("org.testcontainers:testcontainers-bom:1.19.7")
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:postgresql'
@@ -59,19 +73,23 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+def generatedDir = "$buildDir/generated"
+
 // REQUEST MODELS
 tasks.register("generateRequestModels", org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
     generatorName.set("spring")
     inputSpec.set("$projectDir/src/main/resources/openapi.yaml")
-    outputDir.set("$projectDir/src/main/java")
+    outputDir.set(generatedDir)
+
     modelPackage.set("com.example.springtest.api.dto.request")
+
     globalProperties.set([
-            models: "UserCreateRequest,AuthorCreateRequest,BookCreateRequest,StudentCreateRequest,LessonCreateRequest,ProfileRequest"
+            models: "UserCreateRequest,AuthorCreateRequest,BookCreateRequest,StudentCreateRequest,LessonCreateRequest,ProfileRequest,ExternalStudentRequest"
     ])
+
     configOptions.set([
-            interfaceOnly : "true",
             useSpringBoot3: "true",
-            sourceFolder  : ""
+            sourceFolder  : "src/main/java"
     ])
 }
 
@@ -79,110 +97,73 @@ tasks.register("generateRequestModels", org.openapitools.generator.gradle.plugin
 tasks.register("generateResponseModels", org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
     generatorName.set("spring")
     inputSpec.set("$projectDir/src/main/resources/openapi.yaml")
-    outputDir.set("$projectDir/src/main/java")
+    outputDir.set(generatedDir)
+
     modelPackage.set("com.example.springtest.api.dto.response")
+
     globalProperties.set([
-            models: "UserResponse,AuthorResponse,BookResponse,StudentResponse,LessonResponse,ProfileResponse,ErrorResponse"
+            models: "UserResponse,AuthorResponse,BookResponse,StudentResponse,LessonResponse,ProfileResponse,ErrorResponse,ExternalStudentResponse"
     ])
+
     configOptions.set([
-            interfaceOnly : "true",
             useSpringBoot3: "true",
-            sourceFolder  : ""
+            sourceFolder  : "src/main/java"
     ])
 }
 
 // API INTERFACES
 tasks.register("generateApis", org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+    dependsOn("generateRequestModels", "generateResponseModels")
+
     generatorName.set("spring")
     inputSpec.set("$projectDir/src/main/resources/openapi.yaml")
-    outputDir.set("$projectDir/src/main/java")
+    outputDir.set(generatedDir)
+
     apiPackage.set("com.example.springtest.api")
-    modelPackage.set("com.example.springtest.api.dto.request") // временно, исправим ниже
+
     globalProperties.set([
             apis  : "",
             models: "false"
     ])
+
     configOptions.set([
-            interfaceOnly : "true",
-            useTags       : "true",
-            useSpringBoot3: "true",
-            sourceFolder  : "",
+            interfaceOnly       : "true",
+            useTags             : "true",
+            useSpringBoot3      : "true",
+            sourceFolder        : "src/main/java",
             skipDefaultInterface: "true"
+    ])
+
+    importMappings.set([
+            // REQUEST
+            UserCreateRequest      : "com.example.springtest.api.dto.request.UserCreateRequest",
+            AuthorCreateRequest    : "com.example.springtest.api.dto.request.AuthorCreateRequest",
+            BookCreateRequest      : "com.example.springtest.api.dto.request.BookCreateRequest",
+            StudentCreateRequest   : "com.example.springtest.api.dto.request.StudentCreateRequest",
+            LessonCreateRequest    : "com.example.springtest.api.dto.request.LessonCreateRequest",
+            ProfileRequest         : "com.example.springtest.api.dto.request.ProfileRequest",
+            ExternalStudentRequest : "com.example.springtest.api.dto.request.ExternalStudentRequest",
+
+            // RESPONSE
+            UserResponse           : "com.example.springtest.api.dto.response.UserResponse",
+            AuthorResponse         : "com.example.springtest.api.dto.response.AuthorResponse",
+            BookResponse           : "com.example.springtest.api.dto.response.BookResponse",
+            StudentResponse        : "com.example.springtest.api.dto.response.StudentResponse",
+            LessonResponse         : "com.example.springtest.api.dto.response.LessonResponse",
+            ProfileResponse        : "com.example.springtest.api.dto.response.ProfileResponse",
+            ErrorResponse          : "com.example.springtest.api.dto.response.ErrorResponse",
+            ExternalStudentResponse: "com.example.springtest.api.dto.response.ExternalStudentResponse"
     ])
 }
 
-// Патч: заменяем неправильные импорты в сгенерированных API-файлах
-tasks.register("fixApiImports") {
-    dependsOn("generateApis", "generateRequestModels", "generateResponseModels")
-
-    doLast {
-        def apiDir = file("$projectDir/src/main/java/com/example/springtest/api")
-
-        def requestPkg = "com.example.springtest.api.dto.request"
-        def responsePkg = "com.example.springtest.api.dto.response"
-
-        def requestClasses = [
-                "UserCreateRequest", "AuthorCreateRequest", "BookCreateRequest",
-                "StudentCreateRequest", "LessonCreateRequest", "ProfileRequest"
-        ]
-
-        def responseClasses = [
-                "UserResponse", "AuthorResponse", "BookResponse", "StudentResponse",
-                "LessonResponse", "ProfileResponse", "ErrorResponse"
-        ]
-
-        apiDir.eachFileRecurse { file ->
-            if (!file.name.endsWith(".java")) return
-
-            def lines = file.readLines()
-            def newLines = []
-            def importsToAdd = new LinkedHashSet<String>()
-
-            lines.each { line ->
-
-                // Удаляем ТОЛЬКО старые model импорты
-                if (line.contains("org.openapitools.model")) {
-                    return
-                }
-                // Удаляем неправильные Response импорты из request пакета
-                if (line.contains("api.dto.request.") && line.contains("Response")) {
-                    return
-                }
-
-                // Проверяем использование классов
-                requestClasses.each { cls ->
-                    if (line.contains(cls)) {
-                        importsToAdd.add("import ${requestPkg}.${cls};")
-                    }
-                }
-
-                responseClasses.each { cls ->
-                    if (line.contains(cls)) {
-                        importsToAdd.add("import ${responsePkg}.${cls};")
-                    }
-                }
-
-                newLines.add(line)
-            }
-
-            // Найдём место после package
-            def finalLines = []
-            boolean importsInserted = false
-
-            newLines.each { line ->
-                finalLines.add(line)
-
-                if (!importsInserted && line.startsWith("package ")) {
-                    finalLines.add("")
-                    importsToAdd.each { finalLines.add(it) }
-                    finalLines.add("")
-                    importsInserted = true
-                }
-            }
-
-            file.text = finalLines.join("\n")
+// SOURCE SETS
+sourceSets {
+    main {
+        java {
+            srcDirs += "$generatedDir/src/main/java"
         }
     }
 }
 
-compileJava.dependsOn("fixApiImports")
+// BUILD FLOW
+compileJava.dependsOn("generateApis")

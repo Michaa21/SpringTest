@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "authors", schema = "spring_test")
+@Table(name = "authors")
 @Getter
 @Setter
 public class Author {

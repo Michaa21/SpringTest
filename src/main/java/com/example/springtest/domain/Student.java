@@ -11,7 +11,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Table(name = "students", schema = "spring_test")
+@Table(name = "students")
 public class Student {
 
     @Id
@@ -21,7 +21,7 @@ public class Student {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "student_lesson",
             joinColumns = @JoinColumn(name = "student_id"),

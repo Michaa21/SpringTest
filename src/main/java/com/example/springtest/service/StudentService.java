@@ -9,6 +9,8 @@ import com.example.springtest.mapper.StudentApiMapper;
 import com.example.springtest.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentApiMapper studentApiMapper;
+    private final ExternalServiceCaller externalServiceCaller;
 
 
     @Transactional
@@ -39,11 +42,19 @@ public class StudentService {
         return studentApiMapper.toResponse(saved);
     }
 
+    @Cacheable("students")
     @Transactional(readOnly = true)
     public StudentResponse getById(UUID id) {
-        return studentApiMapper.toResponse(findStudent(id));
+
+        Student student = findStudent(id);
+
+        String extra = externalServiceCaller.getExtra(id);
+        log.info("EXTRA = {}", extra);
+
+        return studentApiMapper.toResponse(student);
     }
 
+    @CacheEvict(value = "students", key = "#id")
     @Transactional
     public StudentResponse update(UUID id, StudentCreateRequest request) {
         Student student = findStudent(id);
@@ -60,6 +71,7 @@ public class StudentService {
         return studentApiMapper.toResponse(student);
     }
 
+    @CacheEvict(value = "students", key = "#id")
     @Transactional
     public void delete(UUID id) {
         studentRepository.delete(findStudent(id));

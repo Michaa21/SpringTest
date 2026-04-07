@@ -9,10 +9,11 @@ tags:
   - name: User
   - name: Author
   - name: Student
+  - name: External
 
 paths:
 
-  # USER - PROFILE
+  # USER
 
   /api/users:
     post:
@@ -91,16 +92,8 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '400':
           description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: User not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
     delete:
       tags: [ User ]
@@ -119,7 +112,7 @@ paths:
         '404':
           description: User not found
 
-  # AUTHOR - BOOK
+  # AUTHOR
 
   /api/authors:
     post:
@@ -141,10 +134,6 @@ paths:
                 $ref: '#/components/schemas/AuthorResponse'
         '400':
           description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
   /api/authors/{id}:
     get:
@@ -167,10 +156,6 @@ paths:
                 $ref: '#/components/schemas/AuthorResponse'
         '404':
           description: Author not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
     put:
       tags: [ Author ]
@@ -196,18 +181,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthorResponse'
-        '400':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Author not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
     delete:
       tags: [ Author ]
@@ -223,14 +196,8 @@ paths:
       responses:
         '204':
           description: Author deleted
-        '404':
-          description: Author not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
-  # STUDENT - LESSON
+  # STUDENT
 
   /api/students:
     post:
@@ -252,10 +219,6 @@ paths:
                 $ref: '#/components/schemas/StudentResponse'
         '400':
           description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
   /api/students/{id}:
     get:
@@ -278,10 +241,6 @@ paths:
                 $ref: '#/components/schemas/StudentResponse'
         '404':
           description: Student not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
 
     put:
       tags: [ Student ]
@@ -307,19 +266,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/StudentResponse'
-        '400':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Student not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
 
     delete:
       tags: [ Student ]
@@ -335,13 +281,46 @@ paths:
       responses:
         '204':
           description: Student deleted
-        '404':
-          description: Student not found
+
+  # EXTERNAL
+
+  /external/students/{id}:
+    get:
+      tags: [ External ]
+      summary: Get external student info
+      operationId: getExternalStudent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: External student info
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ExternalStudentResponse'
 
+  /external/students:
+    post:
+      tags: [ External ]
+      summary: Create external student
+      operationId: createExternalStudent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalStudentRequest'
+      responses:
+        '200':
+          description: Created external student
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalStudentResponse'
 
 components:
   schemas:
@@ -364,13 +343,8 @@ components:
       properties:
         firstName:
           type: string
-          minLength: 1
-          maxLength: 100
-
         lastName:
           type: string
-          minLength: 1
-          maxLength: 100
 
     UserResponse:
       type: object
@@ -398,8 +372,6 @@ components:
       properties:
         name:
           type: string
-          minLength: 1
-          maxLength: 100
         books:
           type: array
           items:
@@ -411,8 +383,6 @@ components:
       properties:
         title:
           type: string
-          minLength: 1
-          maxLength: 100
 
     AuthorResponse:
       type: object
@@ -432,7 +402,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         title:
           type: string
 
@@ -443,14 +412,10 @@ components:
       properties:
         name:
           type: string
-          minLength: 1
-          maxLength: 100
         lessons:
           type: array
-          default: []
           items:
             $ref: '#/components/schemas/LessonCreateRequest'
-
 
     LessonCreateRequest:
       type: object
@@ -458,16 +423,12 @@ components:
       properties:
         title:
           type: string
-          minLength: 1
-          maxLength: 100
-
 
     StudentResponse:
       type: object
       properties:
         id:
           type: string
-          format: uuid
         name:
           type: string
         lessons:
@@ -480,8 +441,24 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         title:
+          type: string
+
+    # EXTERNAL
+    ExternalStudentRequest:
+      type: object
+      required: [ name ]
+      properties:
+        name:
+          type: string
+
+    ExternalStudentResponse:
+      type: object
+      required: [ externalId ]
+      properties:
+        externalId:
+          type: string
+        extraInfo:
           type: string
 
     # ERROR
