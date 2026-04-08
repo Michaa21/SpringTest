@@ -1,17 +1,17 @@
 package com.example.springtest.service;
 
 import com.example.springtest.api.dto.request.StudentCreateRequest;
-import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
-import com.example.springtest.client.ExternalStudentClient;
 import com.example.springtest.domain.Lesson;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.mapper.StudentApiMapper;
+import com.example.springtest.repository.LessonRepository;
 import com.example.springtest.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,18 +28,30 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentApiMapper studentApiMapper;
     private final ExternalServiceCaller externalServiceCaller;
+    private final LessonRepository lessonRepository;
 
     @Transactional
     public StudentResponse create(StudentCreateRequest request) {
+
         Student student = studentApiMapper.toEntity(request);
+
+        String extra = externalServiceCaller.getExtra(request.getExternalId());
+        student.setExtra(extra);
 
         Set<Lesson> lessons = request.getLessons()
                 .stream()
-                .map(lessonRequest -> new Lesson(lessonRequest.getTitle()))
+                .map(lessonRequest -> {
+                    String title = lessonRequest.getTitle().trim();
+
+                    return lessonRepository.findByTitleIgnoreCase(title)
+                            .orElseGet(() -> new Lesson(title));
+                })
                 .collect(Collectors.toSet());
+
         student.setLessons(lessons);
 
         Student saved = studentRepository.save(student);
+
         return studentApiMapper.toResponse(saved);
     }
 
@@ -49,12 +61,10 @@ public class StudentService {
 
         Student student = findStudent(id);
 
-        String extra = externalServiceCaller.getExtra(id);
-
-        return studentApiMapper.toResponse(student, extra);
+        return studentApiMapper.toResponse(student);
     }
 
-    @CacheEvict(value = "students", key = "#id")
+    @CachePut(value = "students", key = "#id")
     @Transactional
     public StudentResponse update(UUID id, StudentCreateRequest request) {
         Student student = findStudent(id);

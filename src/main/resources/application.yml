@@ -15,8 +15,6 @@ spring:
 
   cache:
     type: redis
-    redis:
-      time-to-live: 3600000
 
   jpa:
     open-in-view: false
@@ -35,13 +33,15 @@ spring:
     default-schema: spring_test
 
 resilience4j:
-  circuitbreaker:
+  retry:
     instances:
       externalService:
-        slidingWindowSize: 5
-        minimumNumberOfCalls: 5
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10s
+        max-attempts: 3
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        enable-randomized-wait: true
+        randomized-wait-factor: 0.5
 
 logging:
   level:

@@ -11,13 +11,13 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = LessonMapper.class)
 public interface StudentApiMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "extra", ignore = true)
     Student toEntity(StudentCreateRequest request);
 
+    @Mapping(target = "extra", source = "extra")
     StudentResponse toResponse(Student student);
 
-    @Mapping(target = "extra", source = "extra")
-    StudentResponse toResponse(Student student, String extra);
-
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "extra", ignore = true)
     void update(StudentCreateRequest request, @MappingTarget Student student);
 }

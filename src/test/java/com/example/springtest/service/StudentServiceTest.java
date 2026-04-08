@@ -1,5 +1,6 @@
 package com.example.springtest.service;
 
+import com.example.springtest.api.dto.request.StudentCreateRequest;
 import com.example.springtest.api.dto.response.StudentResponse;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
@@ -45,18 +46,42 @@ public class StudentServiceTest {
         when(studentRepository.findWithLessonsById(id))
                 .thenReturn(Optional.of(student));
 
-        when(externalServiceCaller.getExtra(id))
-                .thenReturn("extra");
-
-        when(studentApiMapper.toResponse(student, "extra"))
+        when(studentApiMapper.toResponse(student))
                 .thenReturn(response);
 
         StudentResponse result = studentService.getById(id);
 
         assertNotNull(result);
         verify(studentRepository).findWithLessonsById(id);
-        verify(externalServiceCaller).getExtra(id);
-        verify(studentApiMapper).toResponse(student, "extra");
+        verify(studentApiMapper).toResponse(student);
+        verifyNoInteractions(externalServiceCaller);
+    }
+
+    @Test
+    void create_shouldSaveStudentWithExtra() {
+        UUID externalId = UUID.randomUUID();
+
+        StudentCreateRequest request = new StudentCreateRequest();
+        request.setExternalId(externalId);
+
+        Student student = new Student();
+        Student saved = new Student();
+        StudentResponse response = new StudentResponse();
+
+        when(studentApiMapper.toEntity(request)).thenReturn(student);
+        when(externalServiceCaller.getExtra(externalId)).thenReturn("extra");
+        when(studentRepository.save(student)).thenReturn(saved);
+        when(studentApiMapper.toResponse(saved)).thenReturn(response);
+
+        StudentResponse result = studentService.create(request);
+
+        assertNotNull(result);
+        assertEquals("extra", student.getExtra());
+
+        verify(externalServiceCaller).getExtra(externalId);
+        verify(studentRepository).save(student);
+        verify(studentApiMapper).toEntity(request);
+        verify(studentApiMapper).toResponse(saved);
     }
 
     @Test

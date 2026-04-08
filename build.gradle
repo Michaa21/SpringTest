@@ -19,6 +19,10 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    generatedDir = "$buildDir/generated"
+}
+
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.3"
@@ -26,25 +30,25 @@ dependencyManagement {
 }
 
 dependencies {
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // Feign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-    // Retry
+    // Retry + AOP
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
     // Circuit Breaker
     implementation 'io.github.resilience4j:resilience4j-spring-boot3'
 
-    // Spring Boot
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    // Database
+    // DB
     runtimeOnly 'org.postgresql:postgresql'
     implementation 'org.flywaydb:flyway-core'
 
@@ -53,11 +57,11 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
-    // OpenAPI
+    // OpenAPI / Swagger
     implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
     implementation 'io.swagger.core.v3:swagger-annotations:2.2.20'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
@@ -73,13 +77,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-def generatedDir = "$buildDir/generated"
+// OPENAPI GENERATION
 
 // REQUEST MODELS
 tasks.register("generateRequestModels", org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
     generatorName.set("spring")
     inputSpec.set("$projectDir/src/main/resources/openapi.yaml")
-    outputDir.set(generatedDir)
+    outputDir.set("$buildDir/generated")
 
     modelPackage.set("com.example.springtest.api.dto.request")
 
@@ -97,7 +101,7 @@ tasks.register("generateRequestModels", org.openapitools.generator.gradle.plugin
 tasks.register("generateResponseModels", org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
     generatorName.set("spring")
     inputSpec.set("$projectDir/src/main/resources/openapi.yaml")
-    outputDir.set(generatedDir)
+    outputDir.set("$buildDir/generated")
 
     modelPackage.set("com.example.springtest.api.dto.response")
 
@@ -111,13 +115,13 @@ tasks.register("generateResponseModels", org.openapitools.generator.gradle.plugi
     ])
 }
 
-// API INTERFACES
+// API
 tasks.register("generateApis", org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
     dependsOn("generateRequestModels", "generateResponseModels")
 
     generatorName.set("spring")
     inputSpec.set("$projectDir/src/main/resources/openapi.yaml")
-    outputDir.set(generatedDir)
+    outputDir.set("$buildDir/generated")
 
     apiPackage.set("com.example.springtest.api")
 
@@ -135,7 +139,6 @@ tasks.register("generateApis", org.openapitools.generator.gradle.plugin.tasks.Ge
     ])
 
     importMappings.set([
-            // REQUEST
             UserCreateRequest      : "com.example.springtest.api.dto.request.UserCreateRequest",
             AuthorCreateRequest    : "com.example.springtest.api.dto.request.AuthorCreateRequest",
             BookCreateRequest      : "com.example.springtest.api.dto.request.BookCreateRequest",
@@ -144,7 +147,6 @@ tasks.register("generateApis", org.openapitools.generator.gradle.plugin.tasks.Ge
             ProfileRequest         : "com.example.springtest.api.dto.request.ProfileRequest",
             ExternalStudentRequest : "com.example.springtest.api.dto.request.ExternalStudentRequest",
 
-            // RESPONSE
             UserResponse           : "com.example.springtest.api.dto.response.UserResponse",
             AuthorResponse         : "com.example.springtest.api.dto.response.AuthorResponse",
             BookResponse           : "com.example.springtest.api.dto.response.BookResponse",
@@ -156,14 +158,20 @@ tasks.register("generateApis", org.openapitools.generator.gradle.plugin.tasks.Ge
     ])
 }
 
+tasks.withType(org.openapitools.generator.gradle.plugin.tasks.GenerateTask).configureEach {
+    inputs.file("$projectDir/src/main/resources/openapi.yaml")
+}
+
 // SOURCE SETS
+
 sourceSets {
     main {
         java {
-            srcDirs += "$generatedDir/src/main/java"
+            srcDir "$buildDir/generated/src/main/java"  // ← ИСПРАВЛЕНО!
         }
     }
 }
 
 // BUILD FLOW
+
 compileJava.dependsOn("generateApis")
