@@ -1,0 +1,118 @@
+package com.example.springtest.api.dto.response;
+
+import java.net.URI;
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import org.openapitools.jackson.nullable.JsonNullable;
+import java.time.OffsetDateTime;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+
+import java.util.*;
+import jakarta.annotation.Generated;
+
+/**
+ * ExternalStudentResponse
+ */
+
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-10T15:03:29.261005300+05:00[Asia/Yekaterinburg]")
+public class ExternalStudentResponse {
+
+  private String externalId;
+
+  private String extraInfo;
+
+  public ExternalStudentResponse() {
+    super();
+  }
+
+  /**
+   * Constructor with only required parameters
+   */
+  public ExternalStudentResponse(String externalId) {
+    this.externalId = externalId;
+  }
+
+  public ExternalStudentResponse externalId(String externalId) {
+    this.externalId = externalId;
+    return this;
+  }
+
+  /**
+   * Get externalId
+   * @return externalId
+  */
+  @NotNull 
+  @Schema(name = "externalId", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("externalId")
+  public String getExternalId() {
+    return externalId;
+  }
+
+  public void setExternalId(String externalId) {
+    this.externalId = externalId;
+  }
+
+  public ExternalStudentResponse extraInfo(String extraInfo) {
+    this.extraInfo = extraInfo;
+    return this;
+  }
+
+  /**
+   * Get extraInfo
+   * @return extraInfo
+  */
+  
+  @Schema(name = "extraInfo", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("extraInfo")
+  public String getExtraInfo() {
+    return extraInfo;
+  }
+
+  public void setExtraInfo(String extraInfo) {
+    this.extraInfo = extraInfo;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ExternalStudentResponse externalStudentResponse = (ExternalStudentResponse) o;
+    return Objects.equals(this.externalId, externalStudentResponse.externalId) &&
+        Objects.equals(this.extraInfo, externalStudentResponse.extraInfo);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(externalId, extraInfo);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ExternalStudentResponse {\n");
+    sb.append("    externalId: ").append(toIndentedString(externalId)).append("\n");
+    sb.append("    extraInfo: ").append(toIndentedString(extraInfo)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+}
+
