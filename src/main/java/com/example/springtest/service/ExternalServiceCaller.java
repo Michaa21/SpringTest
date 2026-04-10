@@ -19,26 +19,19 @@ public class ExternalServiceCaller {
     @Retry(name = "externalService")
     @CircuitBreaker(name = "externalService", fallbackMethod = "getExtraFallback")
     public String getExtra(UUID id) {
-        log.info(">>> CALLING external service id={}", id);
+        log.info("Calling external service id={}", id);
 
         String extra = externalStudentClient
                 .getStudentExtraInfo(id.toString())
                 .getExtraInfo();
 
-        log.info(">>> RECEIVED extra = {}", extra);
+        log.info("Received extra = {}", extra);
 
         return extra;
     }
-    /*public String getExtra(UUID id) {
-        log.info("Calling external service for id={}", id);
-
-        return externalStudentClient
-                .getStudentExtraInfo(id.toString())
-                .getExtraInfo();
-    }*/
 
     public String getExtraFallback(UUID id, Throwable ex) {
-        log.warn("Fallback triggered for id={} due to {}", id, ex.getMessage());
+        log.warn("Fallback triggered for id={} due to {}", id, ex.toString());
         return "no extra info";
     }
 }
