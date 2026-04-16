@@ -1,6 +1,7 @@
 package com.example.springtest.service;
 
 import com.example.springtest.api.dto.request.StudentCreateRequest;
+import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
 import com.example.springtest.domain.Lesson;
 import com.example.springtest.domain.Student;
@@ -35,8 +36,10 @@ public class StudentService {
 
         Student student = studentApiMapper.toEntity(request);
 
-        String extra = externalServiceCaller.getExtra(request.getExternalId());
-        student.setExtra(extra);
+        ExternalStudentResponse externalResponse =
+                externalServiceCaller.createExternalStudent("extra-info-for-" + request.getName());
+
+        student.setExtra(externalResponse.getExtraInfo());
 
         Set<Lesson> lessons = request.getLessons()
                 .stream()
@@ -58,10 +61,13 @@ public class StudentService {
     @Cacheable(value = "students", key = "#id")
     @Transactional(readOnly = true)
     public StudentResponse getById(UUID id) {
-
         Student student = findStudent(id);
 
-        return studentApiMapper.toResponse(student);
+        String extra = externalServiceCaller.getExtra(id);
+        StudentResponse response = studentApiMapper.toResponse(student);
+        response.setExtra(extra);
+
+        return response;
     }
 
     @CachePut(value = "students", key = "#id")

@@ -408,13 +408,10 @@ components:
     # STUDENT
     StudentCreateRequest:
       type: object
-      required: [ name, lessons, externalId ]
+      required: [ name, lessons ]
       properties:
         name:
           type: string
-        externalId:
-          type: string
-          format: uuid
         lessons:
           type: array
           items:
@@ -452,17 +449,15 @@ components:
     # EXTERNAL
     ExternalStudentRequest:
       type: object
-      required: [ name ]
+      required: [ extraInfo ]
       properties:
-        name:
+        extraInfo:
           type: string
 
     ExternalStudentResponse:
       type: object
-      required: [ externalId ]
+      required: [ extraInfo ]
       properties:
-        externalId:
-          type: string
         extraInfo:
           type: string
 

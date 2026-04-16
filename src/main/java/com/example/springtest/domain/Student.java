@@ -21,6 +21,7 @@ public class Student {
     @Column(nullable = false)
     private String name;
 
+
     @Column(name = "extra")
     private String extra;
 

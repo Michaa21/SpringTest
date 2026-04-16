@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -23,12 +22,10 @@ import jakarta.annotation.Generated;
  * StudentCreateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-10T15:03:25.072660600+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-15T19:00:33.478721900+05:00[Asia/Yekaterinburg]")
 public class StudentCreateRequest {
 
   private String name;
-
-  private UUID externalId;
 
   @Valid
   private List<@Valid LessonCreateRequest> lessons = new ArrayList<>();
@@ -40,9 +37,8 @@ public class StudentCreateRequest {
   /**
    * Constructor with only required parameters
    */
-  public StudentCreateRequest(String name, UUID externalId, List<@Valid LessonCreateRequest> lessons) {
+  public StudentCreateRequest(String name, List<@Valid LessonCreateRequest> lessons) {
     this.name = name;
-    this.externalId = externalId;
     this.lessons = lessons;
   }
 
@@ -64,26 +60,6 @@ public class StudentCreateRequest {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public StudentCreateRequest externalId(UUID externalId) {
-    this.externalId = externalId;
-    return this;
-  }
-
-  /**
-   * Get externalId
-   * @return externalId
-  */
-  @NotNull @Valid 
-  @Schema(name = "externalId", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("externalId")
-  public UUID getExternalId() {
-    return externalId;
-  }
-
-  public void setExternalId(UUID externalId) {
-    this.externalId = externalId;
   }
 
   public StudentCreateRequest lessons(List<@Valid LessonCreateRequest> lessons) {
@@ -124,13 +100,12 @@ public class StudentCreateRequest {
     }
     StudentCreateRequest studentCreateRequest = (StudentCreateRequest) o;
     return Objects.equals(this.name, studentCreateRequest.name) &&
-        Objects.equals(this.externalId, studentCreateRequest.externalId) &&
         Objects.equals(this.lessons, studentCreateRequest.lessons);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, externalId, lessons);
+    return Objects.hash(name, lessons);
   }
 
   @Override
@@ -138,7 +113,6 @@ public class StudentCreateRequest {
     StringBuilder sb = new StringBuilder();
     sb.append("class StudentCreateRequest {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    externalId: ").append(toIndentedString(externalId)).append("\n");
     sb.append("    lessons: ").append(toIndentedString(lessons)).append("\n");
     sb.append("}");
     return sb.toString();

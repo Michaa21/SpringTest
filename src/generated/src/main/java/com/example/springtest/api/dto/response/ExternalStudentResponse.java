@@ -18,10 +18,8 @@ import jakarta.annotation.Generated;
  * ExternalStudentResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-10T15:03:29.261005300+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-15T19:00:34.336610600+05:00[Asia/Yekaterinburg]")
 public class ExternalStudentResponse {
-
-  private String externalId;
 
   private String extraInfo;
 
@@ -32,28 +30,8 @@ public class ExternalStudentResponse {
   /**
    * Constructor with only required parameters
    */
-  public ExternalStudentResponse(String externalId) {
-    this.externalId = externalId;
-  }
-
-  public ExternalStudentResponse externalId(String externalId) {
-    this.externalId = externalId;
-    return this;
-  }
-
-  /**
-   * Get externalId
-   * @return externalId
-  */
-  @NotNull 
-  @Schema(name = "externalId", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("externalId")
-  public String getExternalId() {
-    return externalId;
-  }
-
-  public void setExternalId(String externalId) {
-    this.externalId = externalId;
+  public ExternalStudentResponse(String extraInfo) {
+    this.extraInfo = extraInfo;
   }
 
   public ExternalStudentResponse extraInfo(String extraInfo) {
@@ -65,8 +43,8 @@ public class ExternalStudentResponse {
    * Get extraInfo
    * @return extraInfo
   */
-  
-  @Schema(name = "extraInfo", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull 
+  @Schema(name = "extraInfo", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("extraInfo")
   public String getExtraInfo() {
     return extraInfo;
@@ -85,20 +63,18 @@ public class ExternalStudentResponse {
       return false;
     }
     ExternalStudentResponse externalStudentResponse = (ExternalStudentResponse) o;
-    return Objects.equals(this.externalId, externalStudentResponse.externalId) &&
-        Objects.equals(this.extraInfo, externalStudentResponse.extraInfo);
+    return Objects.equals(this.extraInfo, externalStudentResponse.extraInfo);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(externalId, extraInfo);
+    return Objects.hash(extraInfo);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ExternalStudentResponse {\n");
-    sb.append("    externalId: ").append(toIndentedString(externalId)).append("\n");
     sb.append("    extraInfo: ").append(toIndentedString(extraInfo)).append("\n");
     sb.append("}");
     return sb.toString();

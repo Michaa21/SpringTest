@@ -18,10 +18,10 @@ import jakarta.annotation.Generated;
  * ExternalStudentRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-10T15:03:25.072660600+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-15T19:00:33.478721900+05:00[Asia/Yekaterinburg]")
 public class ExternalStudentRequest {
 
-  private String name;
+  private String extraInfo;
 
   public ExternalStudentRequest() {
     super();
@@ -30,28 +30,28 @@ public class ExternalStudentRequest {
   /**
    * Constructor with only required parameters
    */
-  public ExternalStudentRequest(String name) {
-    this.name = name;
+  public ExternalStudentRequest(String extraInfo) {
+    this.extraInfo = extraInfo;
   }
 
-  public ExternalStudentRequest name(String name) {
-    this.name = name;
+  public ExternalStudentRequest extraInfo(String extraInfo) {
+    this.extraInfo = extraInfo;
     return this;
   }
 
   /**
-   * Get name
-   * @return name
+   * Get extraInfo
+   * @return extraInfo
   */
   @NotNull 
-  @Schema(name = "name", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("name")
-  public String getName() {
-    return name;
+  @Schema(name = "extraInfo", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("extraInfo")
+  public String getExtraInfo() {
+    return extraInfo;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setExtraInfo(String extraInfo) {
+    this.extraInfo = extraInfo;
   }
 
   @Override
@@ -63,19 +63,19 @@ public class ExternalStudentRequest {
       return false;
     }
     ExternalStudentRequest externalStudentRequest = (ExternalStudentRequest) o;
-    return Objects.equals(this.name, externalStudentRequest.name);
+    return Objects.equals(this.extraInfo, externalStudentRequest.extraInfo);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name);
+    return Objects.hash(extraInfo);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ExternalStudentRequest {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    extraInfo: ").append(toIndentedString(extraInfo)).append("\n");
     sb.append("}");
     return sb.toString();
   }
