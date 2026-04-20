@@ -3,6 +3,7 @@ package com.example.springtest.controller;
 import com.example.springtest.api.StudentApi;
 import com.example.springtest.api.dto.request.StudentCreateRequest;
 import com.example.springtest.api.dto.response.StudentResponse;
+import com.example.springtest.service.StudentSagaOrchestrator;
 import com.example.springtest.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,11 @@ import java.util.UUID;
 public class StudentController implements StudentApi {
 
     private final StudentService studentService;
+    private final StudentSagaOrchestrator studentSagaOrchestrator;
 
     @Override
     public ResponseEntity<StudentResponse> createStudent(StudentCreateRequest request) {
-        return ResponseEntity.ok(studentService.create(request));
+        return ResponseEntity.ok(studentSagaOrchestrator.createStudent(request));
     }
 
     @Override

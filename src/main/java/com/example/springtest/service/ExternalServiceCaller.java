@@ -34,13 +34,12 @@ public class ExternalServiceCaller {
 
     @Retry(name = "externalService")
     @CircuitBreaker(name = "externalService", fallbackMethod = "createExternalStudentFallback")
-    public ExternalStudentResponse createExternalStudent(String extraInfo) {
-        log.info("Calling external service POST with extraInfo={}", extraInfo);
+    public ExternalStudentResponse createExternalStudent(ExternalStudentRequest request) {
+        log.info("Calling external service POST with extraInfo={}", request.getExtraInfo());
 
-        ExternalStudentRequest request = new ExternalStudentRequest(extraInfo);
         ExternalStudentResponse response = externalStudentClient.createExternalStudent(request);
 
-        log.info("Received external response: extraInfo={}", response.getExtraInfo());
+        log.info("Received external response: id={}, extraInfo={}",response.getId(), response.getExtraInfo());
 
         return response;
     }
@@ -50,12 +49,26 @@ public class ExternalServiceCaller {
         return "no extra info";
     }
 
-    public ExternalStudentResponse createExternalStudentFallback(String extraInfo, Throwable ex) {
-        log.warn("Fallback triggered for POST extraInfo={} due to {}", extraInfo, ex.toString());
+    @Retry(name = "externalService")
+    @CircuitBreaker(name = "externalService", fallbackMethod = "deleteExternalStudentFallback")
+    public void deleteExternalStudent(UUID id) {
+        log.info("Calling external service DELETE id={}", id);
+
+        externalStudentClient.deleteExternalStudent(id);
+
+        log.info("External student deleted id={}", id);
+    }
+
+    public ExternalStudentResponse createExternalStudentFallback(ExternalStudentRequest request, Throwable ex) {
+        log.warn("Fallback triggered for POST extraInfo={} due to {}", request.getExtraInfo(), ex.toString());
 
         ExternalStudentResponse response = new ExternalStudentResponse();
         response.setExtraInfo("no extra info");
 
         return response;
+    }
+
+    public void deleteExternalStudentFallback(UUID id, Throwable ex) {
+        log.warn("Fallback triggered for DELETE id={} due to {}", id, ex.toString());
     }
 }

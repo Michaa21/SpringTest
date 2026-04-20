@@ -1,7 +1,6 @@
 package com.example.springtest.service;
 
 import com.example.springtest.api.dto.request.StudentCreateRequest;
-import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
 import com.example.springtest.domain.Lesson;
 import com.example.springtest.domain.Student;
@@ -32,15 +31,10 @@ public class StudentService {
     private final LessonRepository lessonRepository;
 
     @Transactional
-    public StudentResponse create(StudentCreateRequest request) {
+    public StudentResponse create(StudentCreateRequest request, String extraInfo) {
 
         Student student = studentApiMapper.toEntity(request);
-
-        ExternalStudentResponse externalResponse =
-                externalServiceCaller.createExternalStudent("extra-info-for-" + request.getName());
-
-        student.setExtra(externalResponse.getExtraInfo());
-
+        student.setExtra(extraInfo);
         Set<Lesson> lessons = request.getLessons()
                 .stream()
                 .map(lessonRequest -> {
