@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@FeignClient(name = "external-service", url = "http://localhost:8081")
+@FeignClient(name = "external-service", url = "${external-service.url}")
 public interface ExternalStudentClient {
 
     @GetMapping("/external/students/{id}")

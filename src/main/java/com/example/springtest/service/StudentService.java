@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Set;
 import java.util.UUID;
@@ -29,36 +30,43 @@ public class StudentService {
     private final StudentApiMapper studentApiMapper;
     private final ExternalServiceCaller externalServiceCaller;
     private final LessonRepository lessonRepository;
+    private final TransactionTemplate transactionTemplate;
 
-    @Transactional
     public StudentResponse create(StudentCreateRequest request, String extraInfo) {
+        return transactionTemplate.execute(status -> {
+            Student student = studentApiMapper.toEntity(request);
+            student.setExtra(extraInfo);
+            Set<Lesson> lessons = request.getLessons()
+                    .stream()
+                    .map(lessonRequest -> {
+                        String title = lessonRequest.getTitle().trim();
 
-        Student student = studentApiMapper.toEntity(request);
-        student.setExtra(extraInfo);
-        Set<Lesson> lessons = request.getLessons()
-                .stream()
-                .map(lessonRequest -> {
-                    String title = lessonRequest.getTitle().trim();
+                        return lessonRepository.findByTitleIgnoreCase(title)
+                                .orElseGet(() -> new Lesson(title));
+                    })
+                    .collect(Collectors.toSet());
 
-                    return lessonRepository.findByTitleIgnoreCase(title)
-                            .orElseGet(() -> new Lesson(title));
-                })
-                .collect(Collectors.toSet());
+            student.setLessons(lessons);
 
-        student.setLessons(lessons);
+            Student saved = studentRepository.save(student);
 
-        Student saved = studentRepository.save(student);
-
-        return studentApiMapper.toResponse(saved);
+            return studentApiMapper.toResponse(saved);
+        });
     }
 
     @Cacheable(value = "students", key = "#id")
-    @Transactional(readOnly = true)
     public StudentResponse getById(UUID id) {
-        Student student = findStudent(id);
+        StudentResponse response = transactionTemplate.execute(status -> {
+            Student student = studentRepository.findWithLessonsById(id)
+                    .orElseThrow(() -> {
+                        log.warn("Student with id {} not found", id);
+                        return new EntityNotFoundException("Student", id);
+                    });
+
+            return studentApiMapper.toResponse(student);
+        });
 
         String extra = externalServiceCaller.getExtra(id);
-        StudentResponse response = studentApiMapper.toResponse(student);
         response.setExtra(extra);
 
         return response;

@@ -32,7 +32,6 @@ public class ExternalServiceCaller {
         return extra;
     }
 
-    @Retry(name = "externalService")
     @CircuitBreaker(name = "externalService", fallbackMethod = "createExternalStudentFallback")
     public ExternalStudentResponse createExternalStudent(ExternalStudentRequest request) {
         log.info("Calling external service POST with extraInfo={}", request.getExtraInfo());
