@@ -449,9 +449,14 @@ components:
     # EXTERNAL
     ExternalStudentRequest:
       type: object
-      required: [ extraInfo ]
+      required:
+        - studentId
+        - name
       properties:
-        extraInfo:
+        studentId:
+          type: string
+          format: uuid
+        name:
           type: string
 
     ExternalStudentResponse:

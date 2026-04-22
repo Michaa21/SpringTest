@@ -7,6 +7,8 @@ import com.example.springtest.api.dto.response.StudentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class StudentSagaOrchestrator {
@@ -15,13 +17,13 @@ public class StudentSagaOrchestrator {
     private final ExternalServiceCaller externalServiceCaller;
 
     public StudentResponse createStudent(StudentCreateRequest request) {
+        UUID studentId = UUID.randomUUID();
         ExternalStudentResponse externalResponse =
                 externalServiceCaller.createExternalStudent(
-                        new ExternalStudentRequest("extra-info-for-" + request.getName())
-                );
+                        new ExternalStudentRequest(studentId, request.getName()));
 
         try {
-            return studentService.create(request, externalResponse.getExtraInfo());
+            return studentService.create(request, externalResponse.getExtraInfo(), studentId);
         } catch (Exception ex) {
             if (externalResponse.getId() != null) {
                 externalServiceCaller.deleteExternalStudent(externalResponse.getId());

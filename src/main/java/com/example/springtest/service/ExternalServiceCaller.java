@@ -34,11 +34,12 @@ public class ExternalServiceCaller {
 
     @CircuitBreaker(name = "externalService", fallbackMethod = "createExternalStudentFallback")
     public ExternalStudentResponse createExternalStudent(ExternalStudentRequest request) {
-        log.info("Calling external service POST with extraInfo={}", request.getExtraInfo());
+        log.info("Calling external service POST with studentId={} and name={}",
+                request.getStudentId(), request.getName());
 
         ExternalStudentResponse response = externalStudentClient.createExternalStudent(request);
 
-        log.info("Received external response: id={}, extraInfo={}",response.getId(), response.getExtraInfo());
+        log.info("Received external response: id={}, extraInfo={}", response.getId(), response.getExtraInfo());
 
         return response;
     }
@@ -59,7 +60,8 @@ public class ExternalServiceCaller {
     }
 
     public ExternalStudentResponse createExternalStudentFallback(ExternalStudentRequest request, Throwable ex) {
-        log.warn("Fallback triggered for POST extraInfo={} due to {}", request.getExtraInfo(), ex.toString());
+        log.warn("Fallback triggered for POST studentId={} and name={} due to {}",
+                request.getStudentId(), request.getName(), ex.toString());
 
         ExternalStudentResponse response = new ExternalStudentResponse();
         response.setExtraInfo("no extra info");

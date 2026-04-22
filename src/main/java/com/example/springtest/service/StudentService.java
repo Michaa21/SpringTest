@@ -32,9 +32,10 @@ public class StudentService {
     private final LessonRepository lessonRepository;
     private final TransactionTemplate transactionTemplate;
 
-    public StudentResponse create(StudentCreateRequest request, String extraInfo) {
+    public StudentResponse create(StudentCreateRequest request, String extraInfo, UUID studentId) {
         return transactionTemplate.execute(status -> {
             Student student = studentApiMapper.toEntity(request);
+            student.setId(studentId);
             student.setExtra(extraInfo);
             Set<Lesson> lessons = request.getLessons()
                     .stream()
