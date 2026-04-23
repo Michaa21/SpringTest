@@ -10,12 +10,12 @@ import java.util.UUID;
 @FeignClient(name = "external-service", url = "${external-service.url}")
 public interface ExternalStudentClient {
 
-    @GetMapping("/external/students/{id}")
-    ExternalStudentResponse getStudentExtraInfo(@PathVariable String id);
+    @GetMapping("/external/students/{studentId}")
+    ExternalStudentResponse getStudentExtraInfo(@PathVariable String studentId);
 
     @PostMapping("/external/students")
     ExternalStudentResponse createExternalStudent(@RequestBody ExternalStudentRequest request);
 
-    @DeleteMapping("/external/students/{id}")
-    void deleteExternalStudent(@PathVariable UUID id);
+    @DeleteMapping("/external/students/{studentId}")
+    void deleteExternalStudent(@PathVariable UUID studentId);
 }

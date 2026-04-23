@@ -11,7 +11,6 @@ import com.example.springtest.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +72,7 @@ public class StudentService {
         return response;
     }
 
-    @CachePut(value = "students", key = "#id")
+    @CacheEvict(value = "students", key = "#id")
     @Transactional
     public StudentResponse update(UUID id, StudentCreateRequest request) {
         Student student = findStudent(id);

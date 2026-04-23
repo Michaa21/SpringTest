@@ -20,14 +20,14 @@ public class ExternalServiceCaller {
 
     @Retry(name = "externalService")
     @CircuitBreaker(name = "externalService", fallbackMethod = "getExtraFallback")
-    public String getExtra(UUID id) {
-        log.info("Calling external service id={}", id);
+    public String getExtra(UUID studentId) {
+        log.info("Calling external service studentId={}", studentId);
 
         String extra = externalStudentClient
-                .getStudentExtraInfo(id.toString())
+                .getStudentExtraInfo(studentId.toString())
                 .getExtraInfo();
 
-        log.info("Received extra={} for id={}", extra, id);
+        log.info("Received extra={} for studentId={}", extra, studentId);
 
         return extra;
     }
@@ -39,24 +39,24 @@ public class ExternalServiceCaller {
 
         ExternalStudentResponse response = externalStudentClient.createExternalStudent(request);
 
-        log.info("Received external response: id={}, extraInfo={}", response.getId(), response.getExtraInfo());
-
+        log.info("Received external response: studentId={}, extraInfo={}",
+                response.getStudentId(), response.getExtraInfo());
         return response;
     }
 
-    public String getExtraFallback(UUID id, Throwable ex) {
-        log.warn("Fallback triggered for id={} due to {}", id, ex.toString());
+    public String getExtraFallback(UUID studentId, Throwable ex) {
+        log.warn("Fallback triggered for studentId={} due to {}", studentId, ex.toString());
         return "no extra info";
     }
 
     @Retry(name = "externalService")
     @CircuitBreaker(name = "externalService", fallbackMethod = "deleteExternalStudentFallback")
-    public void deleteExternalStudent(UUID id) {
-        log.info("Calling external service DELETE id={}", id);
+    public void deleteExternalStudent(UUID studentId) {
+        log.info("Calling external service DELETE studentId={}", studentId);
 
-        externalStudentClient.deleteExternalStudent(id);
+        externalStudentClient.deleteExternalStudent(studentId);
 
-        log.info("External student deleted id={}", id);
+        log.info("External student deleted studentId={}", studentId);
     }
 
     public ExternalStudentResponse createExternalStudentFallback(ExternalStudentRequest request, Throwable ex) {
@@ -69,7 +69,7 @@ public class ExternalServiceCaller {
         return response;
     }
 
-    public void deleteExternalStudentFallback(UUID id, Throwable ex) {
-        log.warn("Fallback triggered for DELETE id={} due to {}", id, ex.toString());
+    public void deleteExternalStudentFallback(UUID studentId, Throwable ex) {
+        log.warn("Fallback triggered for DELETE studentId={} due to {}", studentId, ex.toString());
     }
 }

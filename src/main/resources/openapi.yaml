@@ -461,9 +461,11 @@ components:
 
     ExternalStudentResponse:
       type: object
-      required: [ id, extraInfo ]
+      required:
+        - studentId
+        - extraInfo
       properties:
-        id:
+        studentId:
           type: string
           format: uuid
         extraInfo:

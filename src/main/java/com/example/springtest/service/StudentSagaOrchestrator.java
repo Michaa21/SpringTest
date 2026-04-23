@@ -25,8 +25,8 @@ public class StudentSagaOrchestrator {
         try {
             return studentService.create(request, externalResponse.getExtraInfo(), studentId);
         } catch (Exception ex) {
-            if (externalResponse.getId() != null) {
-                externalServiceCaller.deleteExternalStudent(externalResponse.getId());
+            if (externalResponse.getStudentId() != null) {
+                externalServiceCaller.deleteExternalStudent(externalResponse.getStudentId());
             }
             throw ex;
         }

@@ -19,10 +19,10 @@ import jakarta.annotation.Generated;
  * ExternalStudentResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-22T14:20:31.870200+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-22T16:30:49.013853100+05:00[Asia/Yekaterinburg]")
 public class ExternalStudentResponse {
 
-  private UUID id;
+  private UUID studentId;
 
   private String extraInfo;
 
@@ -33,29 +33,29 @@ public class ExternalStudentResponse {
   /**
    * Constructor with only required parameters
    */
-  public ExternalStudentResponse(UUID id, String extraInfo) {
-    this.id = id;
+  public ExternalStudentResponse(UUID studentId, String extraInfo) {
+    this.studentId = studentId;
     this.extraInfo = extraInfo;
   }
 
-  public ExternalStudentResponse id(UUID id) {
-    this.id = id;
+  public ExternalStudentResponse studentId(UUID studentId) {
+    this.studentId = studentId;
     return this;
   }
 
   /**
-   * Get id
-   * @return id
+   * Get studentId
+   * @return studentId
   */
   @NotNull @Valid 
-  @Schema(name = "id", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("id")
-  public UUID getId() {
-    return id;
+  @Schema(name = "studentId", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("studentId")
+  public UUID getStudentId() {
+    return studentId;
   }
 
-  public void setId(UUID id) {
-    this.id = id;
+  public void setStudentId(UUID studentId) {
+    this.studentId = studentId;
   }
 
   public ExternalStudentResponse extraInfo(String extraInfo) {
@@ -87,20 +87,20 @@ public class ExternalStudentResponse {
       return false;
     }
     ExternalStudentResponse externalStudentResponse = (ExternalStudentResponse) o;
-    return Objects.equals(this.id, externalStudentResponse.id) &&
+    return Objects.equals(this.studentId, externalStudentResponse.studentId) &&
         Objects.equals(this.extraInfo, externalStudentResponse.extraInfo);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, extraInfo);
+    return Objects.hash(studentId, extraInfo);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ExternalStudentResponse {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    studentId: ").append(toIndentedString(studentId)).append("\n");
     sb.append("    extraInfo: ").append(toIndentedString(extraInfo)).append("\n");
     sb.append("}");
     return sb.toString();
