@@ -17,12 +17,14 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Testcontainers
 @SpringBootTest
@@ -32,11 +34,18 @@ class StudentServiceIntegrationTest {
     static PostgreSQLContainer<?> postgres =
             new PostgreSQLContainer<>("postgres:15");
 
+    @Container
+    static GenericContainer<?> redis =
+            new GenericContainer<>(DockerImageName.parse("redis:7"))
+                    .withExposedPorts(6379);
+
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.data.redis.host", redis::getHost);
+        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
     }
 
     @Autowired
@@ -212,5 +221,92 @@ class StudentServiceIntegrationTest {
         studentService.create(secondRequest, "extra-2", secondStudentId);
 
         assertEquals(1, lessonRepository.findAll().size());
+    }
+
+    @Test
+    void getById_shouldUseCache() {
+        StudentCreateRequest request = new StudentCreateRequest();
+        request.setName("Bob");
+
+        LessonCreateRequest lesson = new LessonCreateRequest();
+        lesson.setTitle("History");
+        request.setLessons(List.of(lesson));
+
+        UUID studentId = UUID.randomUUID();
+        studentService.create(request, "saved-extra-info", studentId);
+
+        when(externalServiceCaller.getExtra(studentId)).thenReturn("external-extra-info");
+
+        StudentResponse first = studentService.getById(studentId);
+        StudentResponse second = studentService.getById(studentId);
+
+        assertNotNull(first);
+        assertNotNull(second);
+        assertEquals(studentId.toString(), first.getId());
+        assertEquals(studentId.toString(), second.getId());
+        assertEquals("external-extra-info", first.getExtra());
+        assertEquals("external-extra-info", second.getExtra());
+
+        verify(externalServiceCaller, times(1)).getExtra(studentId);
+    }
+
+    @Test
+    void getById_shouldEvictCacheAfterUpdate() {
+        StudentCreateRequest createRequest = new StudentCreateRequest();
+        createRequest.setName("Bob");
+
+        LessonCreateRequest lesson = new LessonCreateRequest();
+        lesson.setTitle("History");
+        createRequest.setLessons(List.of(lesson));
+
+        UUID studentId = UUID.randomUUID();
+        studentService.create(createRequest, "saved-extra-info", studentId);
+
+        when(externalServiceCaller.getExtra(studentId))
+                .thenReturn("external-extra-1", "external-extra-2");
+
+        StudentResponse first = studentService.getById(studentId);
+        assertNotNull(first);
+        assertEquals("external-extra-1", first.getExtra());
+
+        StudentCreateRequest updateRequest = new StudentCreateRequest();
+        updateRequest.setName("Alice");
+
+        LessonCreateRequest updatedLesson = new LessonCreateRequest();
+        updatedLesson.setTitle("Math");
+        updateRequest.setLessons(List.of(updatedLesson));
+
+        studentService.update(studentId, updateRequest);
+
+        StudentResponse second = studentService.getById(studentId);
+        assertNotNull(second);
+        assertEquals(studentId.toString(), second.getId());
+        assertEquals("Alice", second.getName());
+        assertEquals("external-extra-2", second.getExtra());
+
+        verify(externalServiceCaller, times(2)).getExtra(studentId);
+    }
+
+    @Test
+    void getById_shouldEvictCacheAfterDelete() {
+        StudentCreateRequest request = new StudentCreateRequest();
+        request.setName("Bob");
+
+        LessonCreateRequest lesson = new LessonCreateRequest();
+        lesson.setTitle("History");
+        request.setLessons(List.of(lesson));
+
+        UUID studentId = UUID.randomUUID();
+        studentService.create(request, "saved-extra-info", studentId);
+
+        when(externalServiceCaller.getExtra(studentId)).thenReturn("external-extra-info");
+
+        StudentResponse cached = studentService.getById(studentId);
+        assertNotNull(cached);
+        assertEquals(studentId.toString(), cached.getId());
+
+        studentService.delete(studentId);
+
+        assertThrows(EntityNotFoundException.class, () -> studentService.getById(studentId));
     }
 }
