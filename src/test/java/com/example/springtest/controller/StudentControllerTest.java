@@ -2,7 +2,7 @@ package com.example.springtest.controller;
 
 import com.example.springtest.api.dto.response.StudentResponse;
 import com.example.springtest.exception.EntityNotFoundException;
-import com.example.springtest.service.StudentSagaOrchestrator;
+import com.example.springtest.service.StudentSagaOrchestratorService;
 import com.example.springtest.service.StudentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ class StudentControllerTest {
     private StudentService studentService;
 
     @MockBean
-    private StudentSagaOrchestrator studentSagaOrchestrator;
+    private StudentSagaOrchestratorService studentSagaOrchestratorService;
 
     @Test
     void createStudent_shouldReturn200() throws Exception {
@@ -39,7 +39,7 @@ class StudentControllerTest {
         response.setName("Bob");
         response.setExtra("extra-info-for-Bob");
 
-        when(studentSagaOrchestrator.createStudent(any())).thenReturn(response);
+        when(studentSagaOrchestratorService.createStudent(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/students")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -3,6 +3,7 @@ package com.example.springtest.service;
 import com.example.springtest.api.dto.request.StudentCreateRequest;
 import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
+import com.example.springtest.client.ExternalStudentClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,16 +19,16 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class StudentSagaOrchestratorTest {
+class StudentSagaOrchestratorServiceTest {
 
     @Mock
     private StudentService studentService;
 
     @Mock
-    private ExternalServiceCaller externalServiceCaller;
+    private ExternalStudentClient externalStudentClient;
 
     @InjectMocks
-    private StudentSagaOrchestrator studentSagaOrchestrator;
+    private StudentSagaOrchestratorService studentSagaOrchestratorService;
 
     @Test
     void createStudent_shouldReturnStudentWithExtra() {
@@ -44,11 +45,11 @@ class StudentSagaOrchestratorTest {
         studentResponse.setName("Bob");
         studentResponse.setExtra("extra-info-for-Bob");
 
-        when(externalServiceCaller.createExternalStudent(any())).thenReturn(externalResponse);
+        when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
         when(studentService.create(any(StudentCreateRequest.class), anyString(), any(UUID.class)))
                 .thenReturn(studentResponse);
 
-        StudentResponse result = studentSagaOrchestrator.createStudent(request);
+        StudentResponse result = studentSagaOrchestratorService.createStudent(request);
 
         assertNotNull(result);
         assertEquals(externalResponse.getStudentId().toString(), result.getId());
@@ -71,11 +72,11 @@ class StudentSagaOrchestratorTest {
         studentResponse.setName("Bob");
         studentResponse.setExtra("no extra info");
 
-        when(externalServiceCaller.createExternalStudent(any())).thenReturn(externalResponse);
+        when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
         when(studentService.create(any(StudentCreateRequest.class), anyString(), any(UUID.class)))
                 .thenReturn(studentResponse);
 
-        StudentResponse result = studentSagaOrchestrator.createStudent(request);
+        StudentResponse result = studentSagaOrchestratorService.createStudent(request);
 
         assertNotNull(result);
         assertEquals(externalResponse.getStudentId().toString(), result.getId());
@@ -95,13 +96,13 @@ class StudentSagaOrchestratorTest {
         externalResponse.setStudentId(externalStudentId);
         externalResponse.setExtraInfo("extra-info-for-Bob");
 
-        when(externalServiceCaller.createExternalStudent(any())).thenReturn(externalResponse);
+        when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
         when(studentService.create(any(StudentCreateRequest.class), anyString(), any(UUID.class)))
                 .thenThrow(new RuntimeException("DB error"));
 
-        assertThrows(RuntimeException.class, () -> studentSagaOrchestrator.createStudent(request));
+        assertThrows(RuntimeException.class, () -> studentSagaOrchestratorService.createStudent(request));
 
-        verify(externalServiceCaller).deleteExternalStudent(externalStudentId);
+        verify(externalStudentClient).deleteExternalStudent(externalStudentId);
     }
 
     @Test
@@ -114,12 +115,12 @@ class StudentSagaOrchestratorTest {
         externalResponse.setStudentId(null);
         externalResponse.setExtraInfo("extra-info-for-Bob");
 
-        when(externalServiceCaller.createExternalStudent(any())).thenReturn(externalResponse);
+        when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
         when(studentService.create(any(StudentCreateRequest.class), anyString(), any(UUID.class)))
                 .thenThrow(new RuntimeException("DB error"));
 
-        assertThrows(RuntimeException.class, () -> studentSagaOrchestrator.createStudent(request));
+        assertThrows(RuntimeException.class, () -> studentSagaOrchestratorService.createStudent(request));
 
-        verify(externalServiceCaller, never()).deleteExternalStudent(any());
+        verify(externalStudentClient, never()).deleteExternalStudent(any());
     }
 }

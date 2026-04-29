@@ -2,6 +2,7 @@ package com.example.springtest.service;
 
 import com.example.springtest.api.dto.request.StudentCreateRequest;
 import com.example.springtest.api.dto.response.StudentResponse;
+import com.example.springtest.client.ExternalStudentClient;
 import com.example.springtest.domain.Lesson;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
@@ -27,7 +28,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentApiMapper studentApiMapper;
-    private final ExternalServiceCaller externalServiceCaller;
+    private final ExternalStudentClient externalStudentClient;
     private final LessonRepository lessonRepository;
     private final TransactionTemplate transactionTemplate;
 
@@ -66,7 +67,10 @@ public class StudentService {
             return studentApiMapper.toResponse(student);
         });
 
-        String extra = externalServiceCaller.getExtra(id);
+        String extra = externalStudentClient
+                .getStudentExtraInfo(id.toString())
+                .getExtraInfo();
+
         response.setExtra(extra);
 
         return response;

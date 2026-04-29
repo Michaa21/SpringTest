@@ -2,7 +2,9 @@ package com.example.springtest.service;
 
 import com.example.springtest.api.dto.request.LessonCreateRequest;
 import com.example.springtest.api.dto.request.StudentCreateRequest;
+import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
+import com.example.springtest.client.ExternalStudentClient;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.repository.LessonRepository;
@@ -14,10 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
@@ -58,7 +60,7 @@ class StudentServiceIntegrationTest {
     private LessonRepository lessonRepository;
 
     @MockBean
-    private ExternalServiceCaller externalServiceCaller;
+    private ExternalStudentClient externalStudentClient;
 
     @BeforeEach
     void setUp() {
@@ -109,8 +111,8 @@ class StudentServiceIntegrationTest {
 
         studentService.create(request, extraInfo, studentId);
 
-        when(externalServiceCaller.getExtra(studentId)).thenReturn("external-extra-info");
-
+        when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
+                .thenReturn(externalResponse(studentId, "external-extra-info"));
         StudentResponse result = studentService.getById(studentId);
 
         assertNotNull(result);
@@ -235,8 +237,8 @@ class StudentServiceIntegrationTest {
         UUID studentId = UUID.randomUUID();
         studentService.create(request, "saved-extra-info", studentId);
 
-        when(externalServiceCaller.getExtra(studentId)).thenReturn("external-extra-info");
-
+        when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
+                .thenReturn(externalResponse(studentId, "external-extra-info"));
         StudentResponse first = studentService.getById(studentId);
         StudentResponse second = studentService.getById(studentId);
 
@@ -247,7 +249,7 @@ class StudentServiceIntegrationTest {
         assertEquals("external-extra-info", first.getExtra());
         assertEquals("external-extra-info", second.getExtra());
 
-        verify(externalServiceCaller, times(1)).getExtra(studentId);
+        verify(externalStudentClient).getStudentExtraInfo(studentId.toString());
     }
 
     @Test
@@ -262,9 +264,11 @@ class StudentServiceIntegrationTest {
         UUID studentId = UUID.randomUUID();
         studentService.create(createRequest, "saved-extra-info", studentId);
 
-        when(externalServiceCaller.getExtra(studentId))
-                .thenReturn("external-extra-1", "external-extra-2");
-
+        when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
+                .thenReturn(
+                        externalResponse(studentId, "external-extra-1"),
+                        externalResponse(studentId, "external-extra-2")
+                );
         StudentResponse first = studentService.getById(studentId);
         assertNotNull(first);
         assertEquals("external-extra-1", first.getExtra());
@@ -284,7 +288,7 @@ class StudentServiceIntegrationTest {
         assertEquals("Alice", second.getName());
         assertEquals("external-extra-2", second.getExtra());
 
-        verify(externalServiceCaller, times(2)).getExtra(studentId);
+        verify(externalStudentClient, times(2)).getStudentExtraInfo(studentId.toString());
     }
 
     @Test
@@ -299,8 +303,8 @@ class StudentServiceIntegrationTest {
         UUID studentId = UUID.randomUUID();
         studentService.create(request, "saved-extra-info", studentId);
 
-        when(externalServiceCaller.getExtra(studentId)).thenReturn("external-extra-info");
-
+        when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
+                .thenReturn(externalResponse(studentId, "external-extra-info"));
         StudentResponse cached = studentService.getById(studentId);
         assertNotNull(cached);
         assertEquals(studentId.toString(), cached.getId());
@@ -308,5 +312,12 @@ class StudentServiceIntegrationTest {
         studentService.delete(studentId);
 
         assertThrows(EntityNotFoundException.class, () -> studentService.getById(studentId));
+    }
+
+    private ExternalStudentResponse externalResponse(UUID studentId, String extraInfo) {
+        ExternalStudentResponse response = new ExternalStudentResponse();
+        response.setStudentId(studentId);
+        response.setExtraInfo(extraInfo);
+        return response;
     }
 }
