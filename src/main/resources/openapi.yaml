@@ -408,10 +408,24 @@ components:
     # STUDENT
     StudentCreateRequest:
       type: object
-      required: [ name, lessons ]
+      required:
+        - name
+        - email
+        - age
+        - lessons
       properties:
         name:
           type: string
+          minLength: 2
+          maxLength: 50
+        email:
+          type: string
+          format: email
+        age:
+          type: integer
+          format: int32
+          minimum: 10
+          maximum: 99
         lessons:
           type: array
           items:
@@ -452,12 +466,24 @@ components:
       required:
         - studentId
         - name
+        - email
+        - age
       properties:
         studentId:
           type: string
           format: uuid
         name:
           type: string
+          minLength: 2
+          maxLength: 50
+        email:
+          type: string
+          format: email
+        age:
+          type: integer
+          format: int32
+          minimum: 10
+          maximum: 99
 
     ExternalStudentResponse:
       type: object

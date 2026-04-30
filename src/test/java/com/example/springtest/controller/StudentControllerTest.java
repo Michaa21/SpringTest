@@ -46,6 +46,8 @@ class StudentControllerTest {
                         .content("""
                                 {
                                   "name": "Bob",
+                                  "email": "bob@mail.com",
+                                  "age": 18,
                                   "lessons": [
                                     {
                                       "title": "Math"
@@ -104,7 +106,9 @@ class StudentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "name": "Updated Bob",
+                                  "name": "Bob",
+                                  "email": "bob@mail.com",
+                                  "age": 18,
                                   "lessons": [
                                     {
                                       "title": "History"

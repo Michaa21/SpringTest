@@ -22,10 +22,14 @@ import jakarta.annotation.Generated;
  * StudentCreateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-22T16:30:47.820508400+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T12:37:42.336115200+05:00[Asia/Yekaterinburg]")
 public class StudentCreateRequest {
 
   private String name;
+
+  private String email;
+
+  private Integer age;
 
   @Valid
   private List<@Valid LessonCreateRequest> lessons = new ArrayList<>();
@@ -37,8 +41,10 @@ public class StudentCreateRequest {
   /**
    * Constructor with only required parameters
    */
-  public StudentCreateRequest(String name, List<@Valid LessonCreateRequest> lessons) {
+  public StudentCreateRequest(String name, String email, Integer age, List<@Valid LessonCreateRequest> lessons) {
     this.name = name;
+    this.email = email;
+    this.age = age;
     this.lessons = lessons;
   }
 
@@ -51,7 +57,7 @@ public class StudentCreateRequest {
    * Get name
    * @return name
   */
-  @NotNull 
+  @NotNull @Size(min = 2, max = 50) 
   @Schema(name = "name", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("name")
   public String getName() {
@@ -60,6 +66,48 @@ public class StudentCreateRequest {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public StudentCreateRequest email(String email) {
+    this.email = email;
+    return this;
+  }
+
+  /**
+   * Get email
+   * @return email
+  */
+  @NotNull @jakarta.validation.constraints.Email 
+  @Schema(name = "email", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("email")
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public StudentCreateRequest age(Integer age) {
+    this.age = age;
+    return this;
+  }
+
+  /**
+   * Get age
+   * minimum: 10
+   * maximum: 99
+   * @return age
+  */
+  @NotNull @Min(10) @Max(99) 
+  @Schema(name = "age", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("age")
+  public Integer getAge() {
+    return age;
+  }
+
+  public void setAge(Integer age) {
+    this.age = age;
   }
 
   public StudentCreateRequest lessons(List<@Valid LessonCreateRequest> lessons) {
@@ -100,12 +148,14 @@ public class StudentCreateRequest {
     }
     StudentCreateRequest studentCreateRequest = (StudentCreateRequest) o;
     return Objects.equals(this.name, studentCreateRequest.name) &&
+        Objects.equals(this.email, studentCreateRequest.email) &&
+        Objects.equals(this.age, studentCreateRequest.age) &&
         Objects.equals(this.lessons, studentCreateRequest.lessons);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, lessons);
+    return Objects.hash(name, email, age, lessons);
   }
 
   @Override
@@ -113,6 +163,8 @@ public class StudentCreateRequest {
     StringBuilder sb = new StringBuilder();
     sb.append("class StudentCreateRequest {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    email: ").append(toIndentedString(email)).append("\n");
+    sb.append("    age: ").append(toIndentedString(age)).append("\n");
     sb.append("    lessons: ").append(toIndentedString(lessons)).append("\n");
     sb.append("}");
     return sb.toString();

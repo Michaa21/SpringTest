@@ -19,9 +19,15 @@ public class StudentSagaOrchestratorService {
 
     public StudentResponse createStudent(StudentCreateRequest request) {
         UUID studentId = UUID.randomUUID();
-        ExternalStudentResponse externalResponse =
-                externalStudentClient.createExternalStudent(
-                        new ExternalStudentRequest(studentId, request.getName()));
+
+        ExternalStudentRequest externalRequest = new ExternalStudentRequest(
+                studentId,
+                request.getName(),
+                request.getEmail(),
+                request.getAge()
+        );
+
+        ExternalStudentResponse externalResponse = externalStudentClient.createExternalStudent(externalRequest);
 
         try {
             return studentService.create(request, externalResponse.getExtraInfo(), studentId);
