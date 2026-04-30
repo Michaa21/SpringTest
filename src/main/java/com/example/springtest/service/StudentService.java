@@ -46,10 +46,9 @@ public class StudentService {
                                 .orElseGet(() -> new Lesson(title));
                     })
                     .collect(Collectors.toSet());
-
             student.setLessons(lessons);
-
             Student saved = studentRepository.save(student);
+            log.info("Student with id {} created", saved.getId());
 
             return studentApiMapper.toResponse(saved);
         });
@@ -70,7 +69,7 @@ public class StudentService {
         String extra = externalStudentClient
                 .getStudentExtraInfo(id.toString())
                 .getExtraInfo();
-
+        log.info("External extra info for student with id {} loaded", id);
         response.setExtra(extra);
 
         return response;
@@ -85,21 +84,29 @@ public class StudentService {
 
         Set<Lesson> lessons = request.getLessons()
                 .stream()
-                .map(lessonRequest -> new Lesson(lessonRequest.getTitle()))
+                .map(lessonRequest -> {
+                    String title = lessonRequest.getTitle().trim();
+
+                    return lessonRepository.findByTitleIgnoreCase(title)
+                            .orElseGet(() -> new Lesson(title));
+                })
                 .collect(Collectors.toSet());
 
         student.setLessons(lessons);
+        StudentResponse response = studentApiMapper.toResponse(student);
+        log.info("Student with id {} updated", id);
 
-        return studentApiMapper.toResponse(student);
+        return response;
     }
 
     @CacheEvict(value = "students", key = "#id")
     @Transactional
     public void delete(UUID id) {
         studentRepository.delete(findStudent(id));
+        log.info("Student with id {} deleted", id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Student findStudent(UUID id) {
         return studentRepository.findWithLessonsById(id)
                 .orElseThrow(() -> {

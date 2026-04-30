@@ -24,13 +24,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class StudentControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @MockBean
-    private StudentService studentService;
+    StudentService studentService;
 
     @MockBean
-    private StudentSagaOrchestratorService studentSagaOrchestratorService;
+    StudentSagaOrchestratorService studentSagaOrchestratorService;
 
     @Test
     void createStudent_shouldReturn200() throws Exception {

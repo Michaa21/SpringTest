@@ -22,13 +22,13 @@ import static org.mockito.Mockito.*;
 class StudentSagaOrchestratorServiceTest {
 
     @Mock
-    private StudentService studentService;
+    StudentService studentService;
 
     @Mock
-    private ExternalStudentClient externalStudentClient;
+    ExternalStudentClient externalStudentClient;
 
     @InjectMocks
-    private StudentSagaOrchestratorService studentSagaOrchestratorService;
+    StudentSagaOrchestratorService studentSagaOrchestratorService;
 
     @Test
     void createStudent_shouldReturnStudentWithExtra() {

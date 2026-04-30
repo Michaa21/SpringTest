@@ -51,16 +51,16 @@ class StudentServiceIntegrationTest {
     }
 
     @Autowired
-    private StudentService studentService;
+    StudentService studentService;
 
     @Autowired
-    private StudentRepository studentRepository;
+    StudentRepository studentRepository;
 
     @Autowired
-    private LessonRepository lessonRepository;
+    LessonRepository lessonRepository;
 
     @MockBean
-    private ExternalStudentClient externalStudentClient;
+    ExternalStudentClient externalStudentClient;
 
     @BeforeEach
     void setUp() {
