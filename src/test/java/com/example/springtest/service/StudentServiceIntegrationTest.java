@@ -83,7 +83,7 @@ class StudentServiceIntegrationTest {
         StudentResponse result = studentService.create(request, extraInfo, studentId);
 
         assertNotNull(result);
-        assertEquals(studentId.toString(), result.getId());
+        assertEquals(studentId, result.getId());
         assertEquals("Bob", result.getName());
         assertEquals("extra-info-for-Bob", result.getExtra());
         assertNotNull(result.getLessons());
@@ -113,10 +113,11 @@ class StudentServiceIntegrationTest {
 
         when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
                 .thenReturn(externalResponse(studentId, "external-extra-info"));
+
         StudentResponse result = studentService.getById(studentId);
 
         assertNotNull(result);
-        assertEquals(studentId.toString(), result.getId());
+        assertEquals(studentId, result.getId());
         assertEquals("Bob", result.getName());
         assertEquals("external-extra-info", result.getExtra());
         assertNotNull(result.getLessons());
@@ -153,7 +154,7 @@ class StudentServiceIntegrationTest {
         StudentResponse result = studentService.update(studentId, updateRequest);
 
         assertNotNull(result);
-        assertEquals(studentId.toString(), result.getId());
+        assertEquals(studentId, result.getId());
         assertEquals("Alice", result.getName());
         assertNotNull(result.getLessons());
         assertEquals(1, result.getLessons().size());
@@ -239,13 +240,14 @@ class StudentServiceIntegrationTest {
 
         when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
                 .thenReturn(externalResponse(studentId, "external-extra-info"));
+
         StudentResponse first = studentService.getById(studentId);
         StudentResponse second = studentService.getById(studentId);
 
         assertNotNull(first);
         assertNotNull(second);
-        assertEquals(studentId.toString(), first.getId());
-        assertEquals(studentId.toString(), second.getId());
+        assertEquals(studentId, first.getId());
+        assertEquals(studentId, second.getId());
         assertEquals("external-extra-info", first.getExtra());
         assertEquals("external-extra-info", second.getExtra());
 
@@ -269,6 +271,7 @@ class StudentServiceIntegrationTest {
                         externalResponse(studentId, "external-extra-1"),
                         externalResponse(studentId, "external-extra-2")
                 );
+
         StudentResponse first = studentService.getById(studentId);
         assertNotNull(first);
         assertEquals("external-extra-1", first.getExtra());
@@ -284,7 +287,7 @@ class StudentServiceIntegrationTest {
 
         StudentResponse second = studentService.getById(studentId);
         assertNotNull(second);
-        assertEquals(studentId.toString(), second.getId());
+        assertEquals(studentId, second.getId());
         assertEquals("Alice", second.getName());
         assertEquals("external-extra-2", second.getExtra());
 
@@ -305,9 +308,10 @@ class StudentServiceIntegrationTest {
 
         when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
                 .thenReturn(externalResponse(studentId, "external-extra-info"));
+
         StudentResponse cached = studentService.getById(studentId);
         assertNotNull(cached);
-        assertEquals(studentId.toString(), cached.getId());
+        assertEquals(studentId, cached.getId());
 
         studentService.delete(studentId);
 

@@ -1,6 +1,7 @@
 package com.example.springtest.service;
 
 import com.example.springtest.api.dto.request.StudentCreateRequest;
+import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
 import com.example.springtest.client.ExternalStudentClient;
 import com.example.springtest.domain.Lesson;
@@ -66,11 +67,10 @@ public class StudentService {
             return studentApiMapper.toResponse(student);
         });
 
-        String extra = externalStudentClient
-                .getStudentExtraInfo(id.toString())
-                .getExtraInfo();
-        log.info("External extra info for student with id {} loaded", id);
-        response.setExtra(extra);
+        ExternalStudentResponse externalResponse =
+                externalStudentClient.getStudentExtraInfo(id.toString());
+        studentApiMapper.updateFromExternalResponse(externalResponse, response);
+        log.info("External info for student with id {} loaded", id);
 
         return response;
     }

@@ -14,8 +14,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,7 +40,7 @@ class StudentSagaOrchestratorServiceTest {
         externalResponse.setExtraInfo("extra-info-for-Bob");
 
         StudentResponse studentResponse = new StudentResponse();
-        studentResponse.setId(externalResponse.getStudentId().toString());
+        studentResponse.setId(externalResponse.getStudentId());
         studentResponse.setName("Bob");
         studentResponse.setExtra("extra-info-for-Bob");
 
@@ -52,7 +51,7 @@ class StudentSagaOrchestratorServiceTest {
         StudentResponse result = studentSagaOrchestratorService.createStudent(request);
 
         assertNotNull(result);
-        assertEquals(externalResponse.getStudentId().toString(), result.getId());
+        assertEquals(externalResponse.getStudentId(), result.getId());
         assertEquals("Bob", result.getName());
         assertEquals("extra-info-for-Bob", result.getExtra());
     }
@@ -68,7 +67,7 @@ class StudentSagaOrchestratorServiceTest {
         externalResponse.setExtraInfo("no extra info");
 
         StudentResponse studentResponse = new StudentResponse();
-        studentResponse.setId(externalResponse.getStudentId().toString());
+        studentResponse.setId(externalResponse.getStudentId());
         studentResponse.setName("Bob");
         studentResponse.setExtra("no extra info");
 
@@ -79,7 +78,7 @@ class StudentSagaOrchestratorServiceTest {
         StudentResponse result = studentSagaOrchestratorService.createStudent(request);
 
         assertNotNull(result);
-        assertEquals(externalResponse.getStudentId().toString(), result.getId());
+        assertEquals(externalResponse.getStudentId(), result.getId());
         assertEquals("Bob", result.getName());
         assertEquals("no extra info", result.getExtra());
     }

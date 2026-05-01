@@ -17,8 +17,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(StudentController.class)
 class StudentControllerTest {
@@ -35,7 +40,7 @@ class StudentControllerTest {
     @Test
     void createStudent_shouldReturn200() throws Exception {
         StudentResponse response = new StudentResponse();
-        response.setId(UUID.randomUUID().toString());
+        response.setId(UUID.randomUUID());
         response.setName("Bob");
         response.setExtra("extra-info-for-Bob");
 
@@ -57,7 +62,7 @@ class StudentControllerTest {
                                 """))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(response.getId()))
+                .andExpect(jsonPath("$.id").value(response.getId().toString()))
                 .andExpect(jsonPath("$.name").value("Bob"))
                 .andExpect(jsonPath("$.extra").value("extra-info-for-Bob"));
     }
@@ -67,7 +72,7 @@ class StudentControllerTest {
         UUID id = UUID.randomUUID();
 
         StudentResponse response = new StudentResponse();
-        response.setId(id.toString());
+        response.setId(id);
         response.setName("Bob");
         response.setExtra("extra-info-for-" + id);
 
@@ -96,7 +101,7 @@ class StudentControllerTest {
         UUID id = UUID.randomUUID();
 
         StudentResponse response = new StudentResponse();
-        response.setId(id.toString());
+        response.setId(id);
         response.setName("Updated Bob");
         response.setExtra("extra-info");
 
@@ -140,6 +145,8 @@ class StudentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
+                                  "email": "bob@mail.com",
+                                  "age": 18,
                                   "lessons": []
                                 }
                                 """))
@@ -153,6 +160,8 @@ class StudentControllerTest {
                         .content("""
                                 {
                                   "name": "Bob",
+                                  "email": "bob@mail.com",
+                                  "age": 18,
                                   "lessons": null
                                 }
                                 """))

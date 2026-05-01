@@ -19,12 +19,16 @@ import jakarta.annotation.Generated;
  * ExternalStudentResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T12:37:42.905044100+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:47.155578300+05:00[Asia/Yekaterinburg]")
 public class ExternalStudentResponse {
 
   private UUID studentId;
 
   private String extraInfo;
+
+  private String email;
+
+  private Integer age;
 
   public ExternalStudentResponse() {
     super();
@@ -33,9 +37,11 @@ public class ExternalStudentResponse {
   /**
    * Constructor with only required parameters
    */
-  public ExternalStudentResponse(UUID studentId, String extraInfo) {
+  public ExternalStudentResponse(UUID studentId, String extraInfo, String email, Integer age) {
     this.studentId = studentId;
     this.extraInfo = extraInfo;
+    this.email = email;
+    this.age = age;
   }
 
   public ExternalStudentResponse studentId(UUID studentId) {
@@ -78,6 +84,46 @@ public class ExternalStudentResponse {
     this.extraInfo = extraInfo;
   }
 
+  public ExternalStudentResponse email(String email) {
+    this.email = email;
+    return this;
+  }
+
+  /**
+   * Get email
+   * @return email
+  */
+  @NotNull @jakarta.validation.constraints.Email 
+  @Schema(name = "email", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("email")
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public ExternalStudentResponse age(Integer age) {
+    this.age = age;
+    return this;
+  }
+
+  /**
+   * Get age
+   * @return age
+  */
+  @NotNull 
+  @Schema(name = "age", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("age")
+  public Integer getAge() {
+    return age;
+  }
+
+  public void setAge(Integer age) {
+    this.age = age;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -88,12 +134,14 @@ public class ExternalStudentResponse {
     }
     ExternalStudentResponse externalStudentResponse = (ExternalStudentResponse) o;
     return Objects.equals(this.studentId, externalStudentResponse.studentId) &&
-        Objects.equals(this.extraInfo, externalStudentResponse.extraInfo);
+        Objects.equals(this.extraInfo, externalStudentResponse.extraInfo) &&
+        Objects.equals(this.email, externalStudentResponse.email) &&
+        Objects.equals(this.age, externalStudentResponse.age);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(studentId, extraInfo);
+    return Objects.hash(studentId, extraInfo, email, age);
   }
 
   @Override
@@ -102,6 +150,8 @@ public class ExternalStudentResponse {
     sb.append("class ExternalStudentResponse {\n");
     sb.append("    studentId: ").append(toIndentedString(studentId)).append("\n");
     sb.append("    extraInfo: ").append(toIndentedString(extraInfo)).append("\n");
+    sb.append("    email: ").append(toIndentedString(email)).append("\n");
+    sb.append("    age: ").append(toIndentedString(age)).append("\n");
     sb.append("}");
     return sb.toString();
   }

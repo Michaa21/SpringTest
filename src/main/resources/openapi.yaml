@@ -440,13 +440,31 @@ components:
 
     StudentResponse:
       type: object
+      required:
+        - id
+        - name
+        - email
+        - age
+        - extra
+        - lessons
       properties:
         id:
           type: string
+          format: uuid
         name:
           type: string
+          example: Bob
+        email:
+          type: string
+          format: email
+          example: bob@mail.com
+        age:
+          type: integer
+          format: int32
+          example: 18
         extra:
           type: string
+          example: extra-info-for-Bob
         lessons:
           type: array
           items:
@@ -490,12 +508,20 @@ components:
       required:
         - studentId
         - extraInfo
+        - email
+        - age
       properties:
         studentId:
           type: string
           format: uuid
         extraInfo:
           type: string
+        email:
+          type: string
+          format: email
+        age:
+          type: integer
+          format: int32
 
     # ERROR
     ErrorResponse:
