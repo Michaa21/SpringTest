@@ -3,7 +3,6 @@ package com.example.springtest.service;
 import com.example.springtest.api.dto.request.StudentCreateRequest;
 import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
-import com.example.springtest.client.ExternalStudentClient;
 import com.example.springtest.domain.Lesson;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
@@ -29,25 +28,18 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentApiMapper studentApiMapper;
-    private final ExternalStudentClient externalStudentClient;
     private final LessonRepository lessonRepository;
     private final TransactionTemplate transactionTemplate;
 
-    public StudentResponse create(StudentCreateRequest request, String extraInfo, UUID studentId) {
+    public StudentResponse create(StudentCreateRequest request, ExternalStudentResponse externalResponse, UUID studentId) {
         return transactionTemplate.execute(status -> {
             Student student = studentApiMapper.toEntity(request);
             student.setId(studentId);
-            student.setExtra(extraInfo);
-            Set<Lesson> lessons = request.getLessons()
-                    .stream()
-                    .map(lessonRequest -> {
-                        String title = lessonRequest.getTitle().trim();
 
-                        return lessonRepository.findByTitleIgnoreCase(title)
-                                .orElseGet(() -> new Lesson(title));
-                    })
-                    .collect(Collectors.toSet());
-            student.setLessons(lessons);
+            studentApiMapper.updateFromExternalResponse(externalResponse, student);
+
+            student.setLessons(resolveLessons(request));
+
             Student saved = studentRepository.save(student);
             log.info("Student with id {} created", saved.getId());
 
@@ -57,7 +49,7 @@ public class StudentService {
 
     @Cacheable(value = "students", key = "#id")
     public StudentResponse getById(UUID id) {
-        StudentResponse response = transactionTemplate.execute(status -> {
+        return transactionTemplate.execute(status -> {
             Student student = studentRepository.findWithLessonsById(id)
                     .orElseThrow(() -> {
                         log.warn("Student with id {} not found", id);
@@ -66,13 +58,6 @@ public class StudentService {
 
             return studentApiMapper.toResponse(student);
         });
-
-        ExternalStudentResponse externalResponse =
-                externalStudentClient.getStudentExtraInfo(id.toString());
-        studentApiMapper.updateFromExternalResponse(externalResponse, response);
-        log.info("External info for student with id {} loaded", id);
-
-        return response;
     }
 
     @CacheEvict(value = "students", key = "#id")
@@ -81,18 +66,8 @@ public class StudentService {
         Student student = findStudent(id);
 
         studentApiMapper.update(request, student);
+        student.setLessons(resolveLessons(request));
 
-        Set<Lesson> lessons = request.getLessons()
-                .stream()
-                .map(lessonRequest -> {
-                    String title = lessonRequest.getTitle().trim();
-
-                    return lessonRepository.findByTitleIgnoreCase(title)
-                            .orElseGet(() -> new Lesson(title));
-                })
-                .collect(Collectors.toSet());
-
-        student.setLessons(lessons);
         StudentResponse response = studentApiMapper.toResponse(student);
         log.info("Student with id {} updated", id);
 
@@ -113,5 +88,17 @@ public class StudentService {
                     log.warn("Student with id {} not found", id);
                     return new EntityNotFoundException("Student", id);
                 });
+    }
+
+    private Set<Lesson> resolveLessons(StudentCreateRequest request) {
+        return request.getLessons()
+                .stream()
+                .map(lessonRequest -> {
+                    String title = lessonRequest.getTitle().trim();
+
+                    return lessonRepository.findByTitleIgnoreCase(title)
+                            .orElseGet(() -> lessonRepository.save(new Lesson(title)));
+                })
+                .collect(Collectors.toSet());
     }
 }

@@ -27,10 +27,11 @@ public class StudentSagaOrchestratorService {
                 request.getAge()
         );
 
-        ExternalStudentResponse externalResponse = externalStudentClient.createExternalStudent(externalRequest);
+        ExternalStudentResponse externalResponse =
+                externalStudentClient.createExternalStudent(externalRequest);
 
         try {
-            return studentService.create(request, externalResponse.getExtraInfo(), studentId);
+            return studentService.create(request, externalResponse, studentId);
         } catch (Exception ex) {
             if (externalResponse.getStudentId() != null) {
                 externalStudentClient.deleteExternalStudent(externalResponse.getStudentId());

@@ -24,6 +24,12 @@ public class Student {
     @Column(name = "extra")
     private String extra;
 
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private Integer age;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "student_lesson",

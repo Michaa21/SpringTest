@@ -14,46 +14,57 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class StudentSagaOrchestratorServiceTest {
 
     @Mock
-    StudentService studentService;
+    private StudentService studentService;
 
     @Mock
-    ExternalStudentClient externalStudentClient;
+    private ExternalStudentClient externalStudentClient;
 
     @InjectMocks
-    StudentSagaOrchestratorService studentSagaOrchestratorService;
+    private StudentSagaOrchestratorService studentSagaOrchestratorService;
 
     @Test
-    void createStudent_shouldReturnStudentWithExtra() {
+    void createStudent_shouldReturnStudentWithExternalData() {
         StudentCreateRequest request = new StudentCreateRequest();
         request.setName("Bob");
         request.setLessons(Collections.emptyList());
 
+        UUID studentId = UUID.randomUUID();
+
         ExternalStudentResponse externalResponse = new ExternalStudentResponse();
-        externalResponse.setStudentId(UUID.randomUUID());
+        externalResponse.setStudentId(studentId);
         externalResponse.setExtraInfo("extra-info-for-Bob");
+        externalResponse.setEmail("bob@mail.com");
+        externalResponse.setAge(20);
 
         StudentResponse studentResponse = new StudentResponse();
-        studentResponse.setId(externalResponse.getStudentId());
+        studentResponse.setId(studentId);
         studentResponse.setName("Bob");
         studentResponse.setExtra("extra-info-for-Bob");
+        studentResponse.setEmail("bob@mail.com");
+        studentResponse.setAge(20);
 
         when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
-        when(studentService.create(any(StudentCreateRequest.class), anyString(), any(UUID.class)))
+        when(studentService.create(any(StudentCreateRequest.class), any(ExternalStudentResponse.class), any(UUID.class)))
                 .thenReturn(studentResponse);
 
         StudentResponse result = studentSagaOrchestratorService.createStudent(request);
 
         assertNotNull(result);
-        assertEquals(externalResponse.getStudentId(), result.getId());
+        assertEquals(studentId, result.getId());
         assertEquals("Bob", result.getName());
         assertEquals("extra-info-for-Bob", result.getExtra());
+        assertEquals("bob@mail.com", result.getEmail());
+        assertEquals(20, result.getAge());
+
+        verify(externalStudentClient).createExternalStudent(any());
+        verify(studentService).create(any(StudentCreateRequest.class), eq(externalResponse), any(UUID.class));
     }
 
     @Test
@@ -62,25 +73,33 @@ class StudentSagaOrchestratorServiceTest {
         request.setName("Bob");
         request.setLessons(Collections.emptyList());
 
+        UUID studentId = UUID.randomUUID();
+
         ExternalStudentResponse externalResponse = new ExternalStudentResponse();
-        externalResponse.setStudentId(UUID.randomUUID());
+        externalResponse.setStudentId(studentId);
         externalResponse.setExtraInfo("no extra info");
+        externalResponse.setEmail("bob@mail.com");
+        externalResponse.setAge(20);
 
         StudentResponse studentResponse = new StudentResponse();
-        studentResponse.setId(externalResponse.getStudentId());
+        studentResponse.setId(studentId);
         studentResponse.setName("Bob");
         studentResponse.setExtra("no extra info");
+        studentResponse.setEmail("bob@mail.com");
+        studentResponse.setAge(20);
 
         when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
-        when(studentService.create(any(StudentCreateRequest.class), anyString(), any(UUID.class)))
+        when(studentService.create(any(StudentCreateRequest.class), any(ExternalStudentResponse.class), any(UUID.class)))
                 .thenReturn(studentResponse);
 
         StudentResponse result = studentSagaOrchestratorService.createStudent(request);
 
         assertNotNull(result);
-        assertEquals(externalResponse.getStudentId(), result.getId());
+        assertEquals(studentId, result.getId());
         assertEquals("Bob", result.getName());
         assertEquals("no extra info", result.getExtra());
+        assertEquals("bob@mail.com", result.getEmail());
+        assertEquals(20, result.getAge());
     }
 
     @Test
@@ -94,9 +113,11 @@ class StudentSagaOrchestratorServiceTest {
         ExternalStudentResponse externalResponse = new ExternalStudentResponse();
         externalResponse.setStudentId(externalStudentId);
         externalResponse.setExtraInfo("extra-info-for-Bob");
+        externalResponse.setEmail("bob@mail.com");
+        externalResponse.setAge(20);
 
         when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
-        when(studentService.create(any(StudentCreateRequest.class), anyString(), any(UUID.class)))
+        when(studentService.create(any(StudentCreateRequest.class), any(ExternalStudentResponse.class), any(UUID.class)))
                 .thenThrow(new RuntimeException("DB error"));
 
         assertThrows(RuntimeException.class, () -> studentSagaOrchestratorService.createStudent(request));
@@ -113,9 +134,11 @@ class StudentSagaOrchestratorServiceTest {
         ExternalStudentResponse externalResponse = new ExternalStudentResponse();
         externalResponse.setStudentId(null);
         externalResponse.setExtraInfo("extra-info-for-Bob");
+        externalResponse.setEmail("bob@mail.com");
+        externalResponse.setAge(20);
 
         when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
-        when(studentService.create(any(StudentCreateRequest.class), anyString(), any(UUID.class)))
+        when(studentService.create(any(StudentCreateRequest.class), any(ExternalStudentResponse.class), any(UUID.class)))
                 .thenThrow(new RuntimeException("DB error"));
 
         assertThrows(RuntimeException.class, () -> studentSagaOrchestratorService.createStudent(request));

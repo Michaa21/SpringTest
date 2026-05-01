@@ -4,7 +4,6 @@ import com.example.springtest.api.dto.request.LessonCreateRequest;
 import com.example.springtest.api.dto.request.StudentCreateRequest;
 import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
-import com.example.springtest.client.ExternalStudentClient;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.repository.LessonRepository;
@@ -13,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @Testcontainers
 @SpringBootTest
@@ -51,41 +49,40 @@ class StudentServiceIntegrationTest {
     }
 
     @Autowired
-    StudentService studentService;
+    private StudentService studentService;
 
     @Autowired
-    StudentRepository studentRepository;
+    private StudentRepository studentRepository;
 
     @Autowired
-    LessonRepository lessonRepository;
+    private LessonRepository lessonRepository;
 
-    @MockBean
-    ExternalStudentClient externalStudentClient;
+    @Autowired
+    private CacheManager cacheManager;
 
     @BeforeEach
     void setUp() {
+        clearCache();
         studentRepository.deleteAll();
         lessonRepository.deleteAll();
     }
 
     @Test
-    void create_shouldSaveStudent() {
-        StudentCreateRequest request = new StudentCreateRequest();
-        request.setName("Bob");
-
-        LessonCreateRequest lesson = new LessonCreateRequest();
-        lesson.setTitle("Math");
-        request.setLessons(List.of(lesson));
-
+    void create_shouldSaveStudentWithExternalData() {
+        StudentCreateRequest request = studentRequest("Bob", "Math");
         UUID studentId = UUID.randomUUID();
-        String extraInfo = "extra-info-for-Bob";
 
-        StudentResponse result = studentService.create(request, extraInfo, studentId);
+        ExternalStudentResponse externalResponse =
+                externalResponse(studentId, "extra-info-for-Bob", "bob@mail.com", 20);
+
+        StudentResponse result = studentService.create(request, externalResponse, studentId);
 
         assertNotNull(result);
         assertEquals(studentId, result.getId());
         assertEquals("Bob", result.getName());
         assertEquals("extra-info-for-Bob", result.getExtra());
+        assertEquals("bob@mail.com", result.getEmail());
+        assertEquals(20, result.getAge());
         assertNotNull(result.getLessons());
         assertEquals(1, result.getLessons().size());
         assertEquals("Math", result.getLessons().getFirst().getTitle());
@@ -94,32 +91,29 @@ class StudentServiceIntegrationTest {
 
         assertEquals("Bob", savedStudent.getName());
         assertEquals("extra-info-for-Bob", savedStudent.getExtra());
+        assertEquals("bob@mail.com", savedStudent.getEmail());
+        assertEquals(20, savedStudent.getAge());
         assertEquals(1, savedStudent.getLessons().size());
     }
 
     @Test
     void getById_shouldReturnStudent() {
-        StudentCreateRequest request = new StudentCreateRequest();
-        request.setName("Bob");
-
-        LessonCreateRequest lesson = new LessonCreateRequest();
-        lesson.setTitle("History");
-        request.setLessons(List.of(lesson));
-
         UUID studentId = UUID.randomUUID();
-        String extraInfo = "saved-extra-info";
 
-        studentService.create(request, extraInfo, studentId);
-
-        when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
-                .thenReturn(externalResponse(studentId, "external-extra-info"));
+        studentService.create(
+                studentRequest("Bob", "History"),
+                externalResponse(studentId, "saved-extra-info", "bob@mail.com", 20),
+                studentId
+        );
 
         StudentResponse result = studentService.getById(studentId);
 
         assertNotNull(result);
         assertEquals(studentId, result.getId());
         assertEquals("Bob", result.getName());
-        assertEquals("external-extra-info", result.getExtra());
+        assertEquals("saved-extra-info", result.getExtra());
+        assertEquals("bob@mail.com", result.getEmail());
+        assertEquals(20, result.getAge());
         assertNotNull(result.getLessons());
         assertEquals(1, result.getLessons().size());
         assertEquals("History", result.getLessons().getFirst().getTitle());
@@ -134,43 +128,41 @@ class StudentServiceIntegrationTest {
 
     @Test
     void update_shouldUpdateStudent() {
-        StudentCreateRequest createRequest = new StudentCreateRequest();
-        createRequest.setName("Bob");
-
-        LessonCreateRequest mathLesson = new LessonCreateRequest();
-        mathLesson.setTitle("Math");
-        createRequest.setLessons(List.of(mathLesson));
-
         UUID studentId = UUID.randomUUID();
-        studentService.create(createRequest, "extra-info", studentId);
 
-        StudentCreateRequest updateRequest = new StudentCreateRequest();
-        updateRequest.setName("Alice");
+        studentService.create(
+                studentRequest("Bob", "Math"),
+                externalResponse(studentId, "extra-info", "bob@mail.com", 20),
+                studentId
+        );
 
-        LessonCreateRequest historyLesson = new LessonCreateRequest();
-        historyLesson.setTitle("History");
-        updateRequest.setLessons(List.of(historyLesson));
+        StudentCreateRequest updateRequest = studentRequest("Alice", "History");
 
         StudentResponse result = studentService.update(studentId, updateRequest);
 
         assertNotNull(result);
         assertEquals(studentId, result.getId());
         assertEquals("Alice", result.getName());
+        assertEquals("extra-info", result.getExtra());
+        assertEquals("bob@mail.com", result.getEmail());
+        assertEquals(20, result.getAge());
         assertNotNull(result.getLessons());
         assertEquals(1, result.getLessons().size());
         assertEquals("History", result.getLessons().getFirst().getTitle());
 
         Student updatedStudent = studentRepository.findWithLessonsById(studentId).orElseThrow();
+
         assertEquals("Alice", updatedStudent.getName());
+        assertEquals("extra-info", updatedStudent.getExtra());
+        assertEquals("bob@mail.com", updatedStudent.getEmail());
+        assertEquals(20, updatedStudent.getAge());
         assertEquals(1, updatedStudent.getLessons().size());
         assertEquals("History", updatedStudent.getLessons().iterator().next().getTitle());
     }
 
     @Test
     void update_shouldThrowException_whenStudentNotFound() {
-        StudentCreateRequest request = new StudentCreateRequest();
-        request.setName("Bob");
-        request.setLessons(List.of());
+        StudentCreateRequest request = studentRequest("Bob");
 
         UUID id = UUID.randomUUID();
 
@@ -179,15 +171,13 @@ class StudentServiceIntegrationTest {
 
     @Test
     void delete_shouldRemoveStudent() {
-        StudentCreateRequest request = new StudentCreateRequest();
-        request.setName("Bob");
-
-        LessonCreateRequest lesson = new LessonCreateRequest();
-        lesson.setTitle("Math");
-        request.setLessons(List.of(lesson));
-
         UUID studentId = UUID.randomUUID();
-        studentService.create(request, "extra-info", studentId);
+
+        studentService.create(
+                studentRequest("Bob", "Math"),
+                externalResponse(studentId, "extra-info", "bob@mail.com", 20),
+                studentId
+        );
 
         studentService.delete(studentId);
 
@@ -203,113 +193,91 @@ class StudentServiceIntegrationTest {
 
     @Test
     void create_shouldReuseExistingLesson_whenLessonAlreadyExists() {
-        StudentCreateRequest firstRequest = new StudentCreateRequest();
-        firstRequest.setName("Bob");
-
-        LessonCreateRequest firstLesson = new LessonCreateRequest();
-        firstLesson.setTitle("Math");
-        firstRequest.setLessons(List.of(firstLesson));
-
         UUID firstStudentId = UUID.randomUUID();
-        studentService.create(firstRequest, "extra-1", firstStudentId);
 
-        StudentCreateRequest secondRequest = new StudentCreateRequest();
-        secondRequest.setName("Alice");
-
-        LessonCreateRequest secondLesson = new LessonCreateRequest();
-        secondLesson.setTitle("Math");
-        secondRequest.setLessons(List.of(secondLesson));
+        studentService.create(
+                studentRequest("Bob", "Math"),
+                externalResponse(firstStudentId, "extra-1", "bob@mail.com", 20),
+                firstStudentId
+        );
 
         UUID secondStudentId = UUID.randomUUID();
-        studentService.create(secondRequest, "extra-2", secondStudentId);
+
+        studentService.create(
+                studentRequest("Alice", "Math"),
+                externalResponse(secondStudentId, "extra-2", "alice@mail.com", 21),
+                secondStudentId
+        );
 
         assertEquals(1, lessonRepository.findAll().size());
     }
 
     @Test
     void getById_shouldUseCache() {
-        StudentCreateRequest request = new StudentCreateRequest();
-        request.setName("Bob");
-
-        LessonCreateRequest lesson = new LessonCreateRequest();
-        lesson.setTitle("History");
-        request.setLessons(List.of(lesson));
-
         UUID studentId = UUID.randomUUID();
-        studentService.create(request, "saved-extra-info", studentId);
 
-        when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
-                .thenReturn(externalResponse(studentId, "external-extra-info"));
+        studentService.create(
+                studentRequest("Bob", "History"),
+                externalResponse(studentId, "saved-extra-info", "bob@mail.com", 20),
+                studentId
+        );
 
         StudentResponse first = studentService.getById(studentId);
+
+        Student savedStudent = studentRepository.findById(studentId).orElseThrow();
+        savedStudent.setName("Changed directly in DB");
+        studentRepository.save(savedStudent);
+
         StudentResponse second = studentService.getById(studentId);
 
         assertNotNull(first);
         assertNotNull(second);
         assertEquals(studentId, first.getId());
         assertEquals(studentId, second.getId());
-        assertEquals("external-extra-info", first.getExtra());
-        assertEquals("external-extra-info", second.getExtra());
-
-        verify(externalStudentClient).getStudentExtraInfo(studentId.toString());
+        assertEquals("Bob", first.getName());
+        assertEquals("Bob", second.getName());
     }
 
     @Test
     void getById_shouldEvictCacheAfterUpdate() {
-        StudentCreateRequest createRequest = new StudentCreateRequest();
-        createRequest.setName("Bob");
-
-        LessonCreateRequest lesson = new LessonCreateRequest();
-        lesson.setTitle("History");
-        createRequest.setLessons(List.of(lesson));
-
         UUID studentId = UUID.randomUUID();
-        studentService.create(createRequest, "saved-extra-info", studentId);
 
-        when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
-                .thenReturn(
-                        externalResponse(studentId, "external-extra-1"),
-                        externalResponse(studentId, "external-extra-2")
-                );
+        studentService.create(
+                studentRequest("Bob", "History"),
+                externalResponse(studentId, "saved-extra-info", "bob@mail.com", 20),
+                studentId
+        );
 
         StudentResponse first = studentService.getById(studentId);
         assertNotNull(first);
-        assertEquals("external-extra-1", first.getExtra());
+        assertEquals("Bob", first.getName());
 
-        StudentCreateRequest updateRequest = new StudentCreateRequest();
-        updateRequest.setName("Alice");
-
-        LessonCreateRequest updatedLesson = new LessonCreateRequest();
-        updatedLesson.setTitle("Math");
-        updateRequest.setLessons(List.of(updatedLesson));
+        StudentCreateRequest updateRequest = studentRequest("Alice", "Math");
 
         studentService.update(studentId, updateRequest);
 
         StudentResponse second = studentService.getById(studentId);
+
         assertNotNull(second);
         assertEquals(studentId, second.getId());
         assertEquals("Alice", second.getName());
-        assertEquals("external-extra-2", second.getExtra());
-
-        verify(externalStudentClient, times(2)).getStudentExtraInfo(studentId.toString());
+        assertEquals("saved-extra-info", second.getExtra());
+        assertEquals("bob@mail.com", second.getEmail());
+        assertEquals(20, second.getAge());
     }
 
     @Test
     void getById_shouldEvictCacheAfterDelete() {
-        StudentCreateRequest request = new StudentCreateRequest();
-        request.setName("Bob");
-
-        LessonCreateRequest lesson = new LessonCreateRequest();
-        lesson.setTitle("History");
-        request.setLessons(List.of(lesson));
-
         UUID studentId = UUID.randomUUID();
-        studentService.create(request, "saved-extra-info", studentId);
 
-        when(externalStudentClient.getStudentExtraInfo(studentId.toString()))
-                .thenReturn(externalResponse(studentId, "external-extra-info"));
+        studentService.create(
+                studentRequest("Bob", "History"),
+                externalResponse(studentId, "saved-extra-info", "bob@mail.com", 20),
+                studentId
+        );
 
         StudentResponse cached = studentService.getById(studentId);
+
         assertNotNull(cached);
         assertEquals(studentId, cached.getId());
 
@@ -318,10 +286,36 @@ class StudentServiceIntegrationTest {
         assertThrows(EntityNotFoundException.class, () -> studentService.getById(studentId));
     }
 
-    private ExternalStudentResponse externalResponse(UUID studentId, String extraInfo) {
+    private StudentCreateRequest studentRequest(String name, String... lessonTitles) {
+        StudentCreateRequest request = new StudentCreateRequest();
+        request.setName(name);
+
+        List<LessonCreateRequest> lessons = List.of(lessonTitles)
+                .stream()
+                .map(title -> {
+                    LessonCreateRequest lesson = new LessonCreateRequest();
+                    lesson.setTitle(title);
+                    return lesson;
+                })
+                .toList();
+
+        request.setLessons(lessons);
+
+        return request;
+    }
+
+    private ExternalStudentResponse externalResponse(UUID studentId, String extraInfo, String email, Integer age) {
         ExternalStudentResponse response = new ExternalStudentResponse();
         response.setStudentId(studentId);
         response.setExtraInfo(extraInfo);
+        response.setEmail(email);
+        response.setAge(age);
         return response;
+    }
+
+    private void clearCache() {
+        if (cacheManager.getCache("students") != null) {
+            cacheManager.getCache("students").clear();
+        }
     }
 }
