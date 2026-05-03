@@ -16,6 +16,7 @@ public interface StudentApiMapper {
     @Mapping(target = "extra", ignore = true)
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "age", ignore = true)
+    @Mapping(target = "lessons", ignore = true)
     Student toEntity(StudentCreateRequest request);
 
     StudentResponse toResponse(Student student);
@@ -24,6 +25,7 @@ public interface StudentApiMapper {
     @Mapping(target = "extra", ignore = true)
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "age", ignore = true)
+    @Mapping(target = "lessons", ignore = true)
     void update(StudentCreateRequest request, @MappingTarget Student student);
 
     @Mapping(target = "extra", source = "extraInfo")

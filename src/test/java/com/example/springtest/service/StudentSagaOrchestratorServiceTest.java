@@ -126,6 +126,43 @@ class StudentSagaOrchestratorServiceTest {
     }
 
     @Test
+    void createStudent_shouldThrowOriginalException_whenCompensationFails() {
+        StudentCreateRequest request = new StudentCreateRequest();
+        request.setName("Bob");
+        request.setLessons(Collections.emptyList());
+
+        UUID externalStudentId = UUID.randomUUID();
+
+        ExternalStudentResponse externalResponse = new ExternalStudentResponse();
+        externalResponse.setStudentId(externalStudentId);
+        externalResponse.setExtraInfo("extra-info-for-Bob");
+        externalResponse.setEmail("bob@mail.com");
+        externalResponse.setAge(20);
+
+        RuntimeException originalException = new RuntimeException("DB error");
+
+        when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
+        when(studentService.create(
+                any(StudentCreateRequest.class),
+                any(ExternalStudentResponse.class),
+                any(UUID.class)
+        )).thenThrow(originalException);
+
+        doThrow(new RuntimeException("Compensation error"))
+                .when(externalStudentClient)
+                .deleteExternalStudent(externalStudentId);
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> studentSagaOrchestratorService.createStudent(request)
+        );
+
+        assertSame(originalException, thrown);
+
+        verify(externalStudentClient).deleteExternalStudent(externalStudentId);
+    }
+
+    @Test
     void createStudent_shouldNotDeleteExternalStudent_whenExternalStudentIdIsNull() {
         StudentCreateRequest request = new StudentCreateRequest();
         request.setName("Bob");
