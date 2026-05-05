@@ -20,15 +20,15 @@ public class StudentSagaOrchestratorService {
     private final ExternalStudentClient externalStudentClient;
 
     public StudentResponse createStudent(StudentCreateRequest request) {
-        UUID localStudentId  = UUID.randomUUID();
+        UUID localStudentId = UUID.randomUUID();
 
-        ExternalStudentRequest externalRequest = buildExternalStudentRequest(request, localStudentId );
+        ExternalStudentRequest externalRequest = buildExternalStudentRequest(request, localStudentId);
 
         ExternalStudentResponse externalResponse =
                 externalStudentClient.createExternalStudent(externalRequest);
 
         try {
-            return studentService.create(request, externalResponse, localStudentId );
+            return studentService.create(request, externalResponse, localStudentId);
         } catch (Exception ex) {
             compensateExternalStudentCreation(externalResponse);
             throw ex;
@@ -40,7 +40,7 @@ public class StudentSagaOrchestratorService {
             UUID localStudentId
     ) {
         return new ExternalStudentRequest(
-                localStudentId ,
+                localStudentId,
                 request.getName(),
                 request.getEmail(),
                 request.getAge()
