@@ -23,6 +23,5 @@ public interface ExternalStudentClient {
 
     @Retry(name = "externalService")
     @CircuitBreaker(name = "externalService")
-    @DeleteMapping("/external/students/{studentId}")
-    void deleteExternalStudent(@PathVariable UUID studentId);
-}
+    @DeleteMapping("/external/students/{studentId}/compensation")
+    void compensateStudentCreation(@PathVariable UUID studentId);}

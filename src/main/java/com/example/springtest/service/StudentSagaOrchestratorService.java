@@ -20,15 +20,15 @@ public class StudentSagaOrchestratorService {
     private final ExternalStudentClient externalStudentClient;
 
     public StudentResponse createStudent(StudentCreateRequest request) {
-        UUID studentId = UUID.randomUUID();
+        UUID localStudentId  = UUID.randomUUID();
 
-        ExternalStudentRequest externalRequest = buildExternalStudentRequest(request, studentId);
+        ExternalStudentRequest externalRequest = buildExternalStudentRequest(request, localStudentId );
 
         ExternalStudentResponse externalResponse =
                 externalStudentClient.createExternalStudent(externalRequest);
 
         try {
-            return studentService.create(request, externalResponse, studentId);
+            return studentService.create(request, externalResponse, localStudentId );
         } catch (Exception ex) {
             compensateExternalStudentCreation(externalResponse);
             throw ex;
@@ -37,10 +37,10 @@ public class StudentSagaOrchestratorService {
 
     private ExternalStudentRequest buildExternalStudentRequest(
             StudentCreateRequest request,
-            UUID studentId
+            UUID localStudentId
     ) {
         return new ExternalStudentRequest(
-                studentId,
+                localStudentId ,
                 request.getName(),
                 request.getEmail(),
                 request.getAge()
@@ -48,15 +48,10 @@ public class StudentSagaOrchestratorService {
     }
 
     private void compensateExternalStudentCreation(ExternalStudentResponse externalResponse) {
-        if (externalResponse.getStudentId() == null) {
-            log.warn("External student compensation skipped because studentId is null");
-            return;
-        }
-
         try {
-            externalStudentClient.deleteExternalStudent(externalResponse.getStudentId());
+            externalStudentClient.compensateStudentCreation(externalResponse.getStudentId());
             log.info(
-                    "External student with studentId {} deleted during compensation",
+                    "External student with studentId {} compensated",
                     externalResponse.getStudentId()
             );
         } catch (Exception compensationException) {

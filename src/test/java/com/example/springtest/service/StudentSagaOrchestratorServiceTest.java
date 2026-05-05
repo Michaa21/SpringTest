@@ -103,7 +103,7 @@ class StudentSagaOrchestratorServiceTest {
     }
 
     @Test
-    void createStudent_shouldDeleteExternalStudent_whenStudentSaveFails() {
+    void createStudent_shouldCompensateExternalStudent_whenStudentSaveFails() {
         StudentCreateRequest request = new StudentCreateRequest();
         request.setName("Bob");
         request.setLessons(Collections.emptyList());
@@ -122,7 +122,7 @@ class StudentSagaOrchestratorServiceTest {
 
         assertThrows(RuntimeException.class, () -> studentSagaOrchestratorService.createStudent(request));
 
-        verify(externalStudentClient).deleteExternalStudent(externalStudentId);
+        verify(externalStudentClient).compensateStudentCreation(externalStudentId);
     }
 
     @Test
@@ -150,7 +150,7 @@ class StudentSagaOrchestratorServiceTest {
 
         doThrow(new RuntimeException("Compensation error"))
                 .when(externalStudentClient)
-                .deleteExternalStudent(externalStudentId);
+                .compensateStudentCreation(externalStudentId);
 
         RuntimeException thrown = assertThrows(
                 RuntimeException.class,
@@ -159,27 +159,6 @@ class StudentSagaOrchestratorServiceTest {
 
         assertSame(originalException, thrown);
 
-        verify(externalStudentClient).deleteExternalStudent(externalStudentId);
-    }
-
-    @Test
-    void createStudent_shouldNotDeleteExternalStudent_whenExternalStudentIdIsNull() {
-        StudentCreateRequest request = new StudentCreateRequest();
-        request.setName("Bob");
-        request.setLessons(Collections.emptyList());
-
-        ExternalStudentResponse externalResponse = new ExternalStudentResponse();
-        externalResponse.setStudentId(null);
-        externalResponse.setExtraInfo("extra-info-for-Bob");
-        externalResponse.setEmail("bob@mail.com");
-        externalResponse.setAge(20);
-
-        when(externalStudentClient.createExternalStudent(any())).thenReturn(externalResponse);
-        when(studentService.create(any(StudentCreateRequest.class), any(ExternalStudentResponse.class), any(UUID.class)))
-                .thenThrow(new RuntimeException("DB error"));
-
-        assertThrows(RuntimeException.class, () -> studentSagaOrchestratorService.createStudent(request));
-
-        verify(externalStudentClient, never()).deleteExternalStudent(any());
+        verify(externalStudentClient).compensateStudentCreation(externalStudentId);
     }
 }
