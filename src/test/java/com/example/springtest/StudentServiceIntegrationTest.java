@@ -1,4 +1,4 @@
-package com.example.springtest.service;
+package com.example.springtest;
 
 import com.example.springtest.api.dto.request.LessonCreateRequest;
 import com.example.springtest.api.dto.request.StudentCreateRequest;
@@ -8,45 +8,18 @@ import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.repository.LessonRepository;
 import com.example.springtest.repository.StudentRepository;
+import com.example.springtest.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Testcontainers
-@SpringBootTest
-class StudentServiceIntegrationTest {
-
-    @Container
-    static PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:15");
-
-    @Container
-    static GenericContainer<?> redis =
-            new GenericContainer<>(DockerImageName.parse("redis:7"))
-                    .withExposedPorts(6379);
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.data.redis.host", redis::getHost);
-        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
-    }
+class StudentServiceIntegrationTest extends IntegrationTestBase {
 
     @Autowired
     private StudentService studentService;
