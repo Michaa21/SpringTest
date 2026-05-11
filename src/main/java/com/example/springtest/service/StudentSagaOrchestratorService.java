@@ -18,6 +18,7 @@ public class StudentSagaOrchestratorService {
 
     private final StudentService studentService;
     private final ExternalStudentClient externalStudentClient;
+    private final ExternalStudentCompensationTaskService compensationTaskService;
 
     public StudentResponse createStudent(StudentCreateRequest request) {
         UUID localStudentId = UUID.randomUUID();
@@ -30,7 +31,7 @@ public class StudentSagaOrchestratorService {
         try {
             return studentService.create(request, externalResponse, localStudentId);
         } catch (Exception ex) {
-            compensateExternalStudentCreation(externalResponse);
+            compensationTaskService.createTask(externalResponse.getStudentId());
             throw ex;
         }
     }
@@ -45,21 +46,5 @@ public class StudentSagaOrchestratorService {
                 request.getEmail(),
                 request.getAge()
         );
-    }
-
-    private void compensateExternalStudentCreation(ExternalStudentResponse externalResponse) {
-        try {
-            externalStudentClient.compensateStudentCreation(externalResponse.getStudentId());
-            log.info(
-                    "External student with studentId {} compensated",
-                    externalResponse.getStudentId()
-            );
-        } catch (Exception compensationException) {
-            log.error(
-                    "Failed to compensate external student creation. studentId={}",
-                    externalResponse.getStudentId(),
-                    compensationException
-            );
-        }
     }
 }
