@@ -68,3 +68,8 @@ springdoc:
 
 external-service:
   url: http://localhost:8081
+
+external-student-compensation:
+  scheduler:
+    enabled: true
+    fixed-delay-ms: 10000

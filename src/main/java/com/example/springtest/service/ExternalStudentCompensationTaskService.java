@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -30,6 +31,19 @@ public class ExternalStudentCompensationTaskService {
     }
 
     @Transactional
+    public void processTasks() {
+        List<ExternalStudentCompensationTask> tasks =
+                compensationTaskRepository.findUncompletedForUpdate();
+
+        if (tasks.isEmpty()) {
+            return;
+        }
+
+        log.info("Found {} external student compensation tasks", tasks.size());
+
+        tasks.forEach(this::processTask);
+    }
+
     public void processTask(ExternalStudentCompensationTask task) {
         try {
             externalStudentClient.compensateStudentCreation(task.getStudentId());
