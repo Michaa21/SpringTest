@@ -13,12 +13,12 @@ public class ExternalServiceRetryPredicate implements Predicate<Throwable> {
 
     @Override
     public boolean test(Throwable throwable) {
-        Integer status = extreactStatus(throwable);
+        Integer status = extractStatus(throwable);
 
         return status != null && RETRYABLE_STATUSES.contains(status);
     }
 
-    private Integer extreactStatus(Throwable throwable) {
+    private Integer extractStatus(Throwable throwable) {
         if (throwable instanceof FeignException feignException) {
             return feignException.status();
         }
@@ -30,7 +30,7 @@ public class ExternalServiceRetryPredicate implements Predicate<Throwable> {
         Throwable cause = throwable.getCause();
 
         if (cause != null && cause != throwable) {
-            return extreactStatus(cause);
+            return extractStatus(cause);
         }
         return null;
     }

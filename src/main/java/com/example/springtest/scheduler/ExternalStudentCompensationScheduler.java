@@ -16,7 +16,7 @@ public class ExternalStudentCompensationScheduler {
 
     private final ExternalStudentCompensationTaskService compensationTaskService;
 
-    @Scheduled(fixedDelayString = "${external-student-compensation.fixed-delay-ms}")
+    @Scheduled(fixedDelayString = "${external-student-compensation.scheduler.fixed-delay-ms}")
     public void processCompensationTasks() {
         compensationTaskService.processTasks();
     }
