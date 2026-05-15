@@ -1,7 +1,4 @@
-package com.example.springtest.api.dto.request;
-
-import com.example.springtest.api.dto.request.LessonCreateRequest;
-
+package com.example.springtest.api.dto.response;
 
 import java.net.URI;
 import java.util.Objects;
@@ -18,26 +15,37 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * LessonCreateRequest
+ * LessonResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:45.194813900+05:00[Asia/Yekaterinburg]")
-public class LessonCreateRequest {
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:47.155578300+05:00[Asia/Yekaterinburg]")
+public class LessonResponse {
+
+  private String id;
 
   private String title;
 
-  public LessonCreateRequest() {
-    super();
+  public LessonResponse id(String id) {
+    this.id = id;
+    return this;
   }
 
   /**
-   * Constructor with only required parameters
-   */
-  public LessonCreateRequest(String title) {
-    this.title = title;
+   * Get id
+   * @return id
+  */
+  
+  @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @JsonProperty("id")
+  public String getId() {
+    return id;
   }
 
-  public LessonCreateRequest title(String title) {
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public LessonResponse title(String title) {
     this.title = title;
     return this;
   }
@@ -46,8 +54,8 @@ public class LessonCreateRequest {
    * Get title
    * @return title
   */
-  @NotNull @Size(min = 1, max = 100) 
-  @Schema(name = "title", requiredMode = Schema.RequiredMode.REQUIRED)
+  
+  @Schema(name = "title", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("title")
   public String getTitle() {
     return title;
@@ -65,19 +73,21 @@ public class LessonCreateRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    LessonCreateRequest lessonCreateRequest = (LessonCreateRequest) o;
-    return Objects.equals(this.title, lessonCreateRequest.title);
+    LessonResponse lessonResponse = (LessonResponse) o;
+    return Objects.equals(this.id, lessonResponse.id) &&
+        Objects.equals(this.title, lessonResponse.title);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title);
+    return Objects.hash(id, title);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class LessonCreateRequest {\n");
+    sb.append("class LessonResponse {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -94,3 +104,4 @@ public class LessonCreateRequest {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

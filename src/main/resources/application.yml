@@ -8,6 +8,14 @@ spring:
     username: postgres
     password: 123456
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cache:
+    type: redis
+
   jpa:
     open-in-view: false
     hibernate:
@@ -24,12 +32,44 @@ spring:
     schemas: spring_test
     default-schema: spring_test
 
+resilience4j:
+  retry:
+    instances:
+      externalService:
+        max-attempts: 3
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        enable-randomized-wait: true
+        randomized-wait-factor: 0.5
+        retry-exception-predicate: com.example.springtest.config.ExternalServiceRetryPredicate
+
+  circuitbreaker:
+    instances:
+      externalService:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+
 logging:
   level:
     org.hibernate.SQL: DEBUG
+    io.github.resilience4j: DEBUG
 
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+external-service:
+  url: http://localhost:8081
+
+external-student-compensation:
+  scheduler:
+    enabled: true
+    fixed-delay-ms: 10000

@@ -1,13 +1,9 @@
 package com.example.springtest.api.dto.response;
 
-import com.example.springtest.api.dto.response.BookResponse;
-
-
 import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -22,14 +18,14 @@ import jakarta.annotation.Generated;
  * BookResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:45.832819500+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:47.155578300+05:00[Asia/Yekaterinburg]")
 public class BookResponse {
 
-  private UUID id;
+  private String id;
 
   private String title;
 
-  public BookResponse id(UUID id) {
+  public BookResponse id(String id) {
     this.id = id;
     return this;
   }
@@ -38,14 +34,14 @@ public class BookResponse {
    * Get id
    * @return id
   */
-  @Valid 
+  
   @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("id")
-  public UUID getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(UUID id) {
+  public void setId(String id) {
     this.id = id;
   }
 
@@ -108,3 +104,4 @@ public class BookResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

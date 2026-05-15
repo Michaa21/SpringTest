@@ -1,15 +1,10 @@
-package com.example.springtest.api.dto.response;
-
-import com.example.springtest.api.dto.response.ProfileResponse;
-import com.example.springtest.api.dto.response.UserResponse;
-
+package com.example.springtest.api.dto.request;
 
 import java.net.URI;
 import java.util.Objects;
-import com.example.springtest.api.dto.response.ProfileResponse;
+import com.example.springtest.api.dto.request.ProfileRequest;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -21,39 +16,29 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * UserResponse
+ * UserCreateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:45.832819500+05:00[Asia/Yekaterinburg]")
-public class UserResponse {
-
-  private UUID id;
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:45.890509600+05:00[Asia/Yekaterinburg]")
+public class UserCreateRequest {
 
   private String username;
 
-  private ProfileResponse profile;
+  private ProfileRequest profile;
 
-  public UserResponse id(UUID id) {
-    this.id = id;
-    return this;
+  public UserCreateRequest() {
+    super();
   }
 
   /**
-   * Get id
-   * @return id
-  */
-  @Valid 
-  @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("id")
-  public UUID getId() {
-    return id;
+   * Constructor with only required parameters
+   */
+  public UserCreateRequest(String username, ProfileRequest profile) {
+    this.username = username;
+    this.profile = profile;
   }
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
-
-  public UserResponse username(String username) {
+  public UserCreateRequest username(String username) {
     this.username = username;
     return this;
   }
@@ -62,8 +47,8 @@ public class UserResponse {
    * Get username
    * @return username
   */
-  
-  @Schema(name = "username", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull @Size(min = 1, max = 100) 
+  @Schema(name = "username", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("username")
   public String getUsername() {
     return username;
@@ -73,7 +58,7 @@ public class UserResponse {
     this.username = username;
   }
 
-  public UserResponse profile(ProfileResponse profile) {
+  public UserCreateRequest profile(ProfileRequest profile) {
     this.profile = profile;
     return this;
   }
@@ -82,14 +67,14 @@ public class UserResponse {
    * Get profile
    * @return profile
   */
-  @Valid 
-  @Schema(name = "profile", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull @Valid 
+  @Schema(name = "profile", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("profile")
-  public ProfileResponse getProfile() {
+  public ProfileRequest getProfile() {
     return profile;
   }
 
-  public void setProfile(ProfileResponse profile) {
+  public void setProfile(ProfileRequest profile) {
     this.profile = profile;
   }
 
@@ -101,22 +86,20 @@ public class UserResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UserResponse userResponse = (UserResponse) o;
-    return Objects.equals(this.id, userResponse.id) &&
-        Objects.equals(this.username, userResponse.username) &&
-        Objects.equals(this.profile, userResponse.profile);
+    UserCreateRequest userCreateRequest = (UserCreateRequest) o;
+    return Objects.equals(this.username, userCreateRequest.username) &&
+        Objects.equals(this.profile, userCreateRequest.profile);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, username, profile);
+    return Objects.hash(username, profile);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UserResponse {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("class UserCreateRequest {\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    profile: ").append(toIndentedString(profile)).append("\n");
     sb.append("}");
@@ -134,3 +117,4 @@ public class UserResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

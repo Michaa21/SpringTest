@@ -7,10 +7,6 @@ package com.example.springtest.api;
 
 import com.example.springtest.api.dto.request.AuthorCreateRequest;
 import com.example.springtest.api.dto.response.AuthorResponse;
-import com.example.springtest.api.dto.response.ErrorResponse;
-
-
-import com.example.springtest.api.dto.request.AuthorCreateRequest;
 import java.util.UUID;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:44.608276+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:48.140575600+05:00[Asia/Yekaterinburg]")
 @Validated
 @Tag(name = "Author", description = "the Author API")
 public interface AuthorApi {
@@ -58,9 +54,7 @@ public interface AuthorApi {
             @ApiResponse(responseCode = "200", description = "Author created", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = AuthorResponse.class))
             }),
-            @ApiResponse(responseCode = "400", description = "Validation error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            })
+            @ApiResponse(responseCode = "400", description = "Validation error")
         }
     )
     @RequestMapping(
@@ -80,23 +74,18 @@ public interface AuthorApi {
      *
      * @param id  (required)
      * @return Author deleted (status code 204)
-     *         or Author not found (status code 404)
      */
     @Operation(
         operationId = "deleteAuthor",
         summary = "Delete author",
         tags = { "Author" },
         responses = {
-            @ApiResponse(responseCode = "204", description = "Author deleted"),
-            @ApiResponse(responseCode = "404", description = "Author not found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            })
+            @ApiResponse(responseCode = "204", description = "Author deleted")
         }
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
-        value = "/api/authors/{id}",
-        produces = { "application/json" }
+        value = "/api/authors/{id}"
     )
     
     ResponseEntity<Void> deleteAuthor(
@@ -119,9 +108,7 @@ public interface AuthorApi {
             @ApiResponse(responseCode = "200", description = "Author found", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = AuthorResponse.class))
             }),
-            @ApiResponse(responseCode = "404", description = "Author not found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            })
+            @ApiResponse(responseCode = "404", description = "Author not found")
         }
     )
     @RequestMapping(
@@ -141,8 +128,6 @@ public interface AuthorApi {
      * @param id  (required)
      * @param authorCreateRequest  (required)
      * @return Author updated (status code 200)
-     *         or Validation error (status code 400)
-     *         or Author not found (status code 404)
      */
     @Operation(
         operationId = "updateAuthor",
@@ -151,12 +136,6 @@ public interface AuthorApi {
         responses = {
             @ApiResponse(responseCode = "200", description = "Author updated", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = AuthorResponse.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Validation error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            }),
-            @ApiResponse(responseCode = "404", description = "Author not found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             })
         }
     )

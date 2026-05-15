@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "books", schema = "spring_test")
+@Table(name = "books")
 @Getter
 @Setter
 public class Book {

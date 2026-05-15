@@ -1,12 +1,8 @@
 package com.example.springtest.api.dto.request;
 
-import com.example.springtest.api.dto.request.LessonCreateRequest;
-import com.example.springtest.api.dto.request.StudentCreateRequest;
-
-
 import java.net.URI;
 import java.util.Objects;
-import com.example.springtest.api.dto.request.LessonCreateRequest;
+import com.example.springtest.api.dto.request.BookCreateRequest;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.ArrayList;
@@ -23,30 +19,30 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * StudentCreateRequest
+ * AuthorCreateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:45.194813900+05:00[Asia/Yekaterinburg]")
-public class StudentCreateRequest {
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:45.890509600+05:00[Asia/Yekaterinburg]")
+public class AuthorCreateRequest {
 
   private String name;
 
   @Valid
-  private List<@Valid LessonCreateRequest> lessons = new ArrayList<>();
+  private List<@Valid BookCreateRequest> books = new ArrayList<>();
 
-  public StudentCreateRequest() {
+  public AuthorCreateRequest() {
     super();
   }
 
   /**
    * Constructor with only required parameters
    */
-  public StudentCreateRequest(String name, List<@Valid LessonCreateRequest> lessons) {
+  public AuthorCreateRequest(String name, List<@Valid BookCreateRequest> books) {
     this.name = name;
-    this.lessons = lessons;
+    this.books = books;
   }
 
-  public StudentCreateRequest name(String name) {
+  public AuthorCreateRequest name(String name) {
     this.name = name;
     return this;
   }
@@ -55,7 +51,7 @@ public class StudentCreateRequest {
    * Get name
    * @return name
   */
-  @NotNull @Size(min = 1, max = 100) 
+  @NotNull 
   @Schema(name = "name", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("name")
   public String getName() {
@@ -66,32 +62,32 @@ public class StudentCreateRequest {
     this.name = name;
   }
 
-  public StudentCreateRequest lessons(List<@Valid LessonCreateRequest> lessons) {
-    this.lessons = lessons;
+  public AuthorCreateRequest books(List<@Valid BookCreateRequest> books) {
+    this.books = books;
     return this;
   }
 
-  public StudentCreateRequest addLessonsItem(LessonCreateRequest lessonsItem) {
-    if (this.lessons == null) {
-      this.lessons = new ArrayList<>();
+  public AuthorCreateRequest addBooksItem(BookCreateRequest booksItem) {
+    if (this.books == null) {
+      this.books = new ArrayList<>();
     }
-    this.lessons.add(lessonsItem);
+    this.books.add(booksItem);
     return this;
   }
 
   /**
-   * Get lessons
-   * @return lessons
+   * Get books
+   * @return books
   */
   @NotNull @Valid 
-  @Schema(name = "lessons", requiredMode = Schema.RequiredMode.REQUIRED)
-  @JsonProperty("lessons")
-  public List<@Valid LessonCreateRequest> getLessons() {
-    return lessons;
+  @Schema(name = "books", requiredMode = Schema.RequiredMode.REQUIRED)
+  @JsonProperty("books")
+  public List<@Valid BookCreateRequest> getBooks() {
+    return books;
   }
 
-  public void setLessons(List<@Valid LessonCreateRequest> lessons) {
-    this.lessons = lessons;
+  public void setBooks(List<@Valid BookCreateRequest> books) {
+    this.books = books;
   }
 
   @Override
@@ -102,22 +98,22 @@ public class StudentCreateRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    StudentCreateRequest studentCreateRequest = (StudentCreateRequest) o;
-    return Objects.equals(this.name, studentCreateRequest.name) &&
-        Objects.equals(this.lessons, studentCreateRequest.lessons);
+    AuthorCreateRequest authorCreateRequest = (AuthorCreateRequest) o;
+    return Objects.equals(this.name, authorCreateRequest.name) &&
+        Objects.equals(this.books, authorCreateRequest.books);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, lessons);
+    return Objects.hash(name, books);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class StudentCreateRequest {\n");
+    sb.append("class AuthorCreateRequest {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    lessons: ").append(toIndentedString(lessons)).append("\n");
+    sb.append("    books: ").append(toIndentedString(books)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -133,3 +129,4 @@ public class StudentCreateRequest {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

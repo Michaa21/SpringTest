@@ -1,9 +1,5 @@
 package com.example.springtest.api.dto.response;
 
-import com.example.springtest.api.dto.response.BookResponse;
-import com.example.springtest.api.dto.response.AuthorResponse;
-
-
 import java.net.URI;
 import java.util.Objects;
 import com.example.springtest.api.dto.response.BookResponse;
@@ -27,7 +23,7 @@ import jakarta.annotation.Generated;
  * AuthorResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:45.832819500+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:47.155578300+05:00[Asia/Yekaterinburg]")
 public class AuthorResponse {
 
   private UUID id;
@@ -146,3 +142,4 @@ public class AuthorResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

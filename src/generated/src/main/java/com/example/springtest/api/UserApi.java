@@ -5,13 +5,10 @@
  */
 package com.example.springtest.api;
 
-import com.example.springtest.api.dto.request.UserCreateRequest;
-import com.example.springtest.api.dto.response.UserResponse;
 import com.example.springtest.api.dto.response.ErrorResponse;
-
-
 import java.util.UUID;
 import com.example.springtest.api.dto.request.UserCreateRequest;
+import com.example.springtest.api.dto.response.UserResponse;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:44.608276+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:48.140575600+05:00[Asia/Yekaterinburg]")
 @Validated
 @Tag(name = "User", description = "the User API")
 public interface UserApi {
@@ -149,12 +146,8 @@ public interface UserApi {
             @ApiResponse(responseCode = "200", description = "User updated", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))
             }),
-            @ApiResponse(responseCode = "400", description = "Validation error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            }),
-            @ApiResponse(responseCode = "404", description = "User not found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            })
+            @ApiResponse(responseCode = "400", description = "Validation error"),
+            @ApiResponse(responseCode = "404", description = "User not found")
         }
     )
     @RequestMapping(

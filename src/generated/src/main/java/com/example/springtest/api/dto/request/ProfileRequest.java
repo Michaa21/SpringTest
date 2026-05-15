@@ -1,7 +1,4 @@
-package com.example.springtest.api.dto.response;
-
-import com.example.springtest.api.dto.response.ProfileResponse;
-
+package com.example.springtest.api.dto.request;
 
 import java.net.URI;
 import java.util.Objects;
@@ -18,17 +15,29 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * ProfileResponse
+ * ProfileRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:45.832819500+05:00[Asia/Yekaterinburg]")
-public class ProfileResponse {
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:45.890509600+05:00[Asia/Yekaterinburg]")
+public class ProfileRequest {
 
   private String firstName;
 
   private String lastName;
 
-  public ProfileResponse firstName(String firstName) {
+  public ProfileRequest() {
+    super();
+  }
+
+  /**
+   * Constructor with only required parameters
+   */
+  public ProfileRequest(String firstName, String lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  public ProfileRequest firstName(String firstName) {
     this.firstName = firstName;
     return this;
   }
@@ -37,8 +46,8 @@ public class ProfileResponse {
    * Get firstName
    * @return firstName
   */
-  
-  @Schema(name = "firstName", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull 
+  @Schema(name = "firstName", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("firstName")
   public String getFirstName() {
     return firstName;
@@ -48,7 +57,7 @@ public class ProfileResponse {
     this.firstName = firstName;
   }
 
-  public ProfileResponse lastName(String lastName) {
+  public ProfileRequest lastName(String lastName) {
     this.lastName = lastName;
     return this;
   }
@@ -57,8 +66,8 @@ public class ProfileResponse {
    * Get lastName
    * @return lastName
   */
-  
-  @Schema(name = "lastName", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull 
+  @Schema(name = "lastName", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("lastName")
   public String getLastName() {
     return lastName;
@@ -76,9 +85,9 @@ public class ProfileResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ProfileResponse profileResponse = (ProfileResponse) o;
-    return Objects.equals(this.firstName, profileResponse.firstName) &&
-        Objects.equals(this.lastName, profileResponse.lastName);
+    ProfileRequest profileRequest = (ProfileRequest) o;
+    return Objects.equals(this.firstName, profileRequest.firstName) &&
+        Objects.equals(this.lastName, profileRequest.lastName);
   }
 
   @Override
@@ -89,7 +98,7 @@ public class ProfileResponse {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ProfileResponse {\n");
+    sb.append("class ProfileRequest {\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
     sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");
     sb.append("}");
@@ -107,3 +116,4 @@ public class ProfileResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

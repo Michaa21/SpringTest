@@ -1,8 +1,5 @@
 package com.example.springtest.api.dto.response;
 
-import com.example.springtest.api.dto.response.ErrorResponse;
-
-
 import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,7 +20,7 @@ import jakarta.annotation.Generated;
  * ErrorResponse
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:45.832819500+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:47.155578300+05:00[Asia/Yekaterinburg]")
 public class ErrorResponse {
 
   private Integer status;
@@ -134,3 +131,4 @@ public class ErrorResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

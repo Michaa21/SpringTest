@@ -1,13 +1,9 @@
-package com.example.springtest.api.dto.response;
-
-import com.example.springtest.api.dto.response.LessonResponse;
-
+package com.example.springtest.api.dto.request;
 
 import java.net.URI;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
-import java.util.UUID;
 import org.openapitools.jackson.nullable.JsonNullable;
 import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
@@ -19,37 +15,26 @@ import java.util.*;
 import jakarta.annotation.Generated;
 
 /**
- * LessonResponse
+ * LessonCreateRequest
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:45.832819500+05:00[Asia/Yekaterinburg]")
-public class LessonResponse {
-
-  private UUID id;
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:45.890509600+05:00[Asia/Yekaterinburg]")
+public class LessonCreateRequest {
 
   private String title;
 
-  public LessonResponse id(UUID id) {
-    this.id = id;
-    return this;
+  public LessonCreateRequest() {
+    super();
   }
 
   /**
-   * Get id
-   * @return id
-  */
-  @Valid 
-  @Schema(name = "id", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-  @JsonProperty("id")
-  public UUID getId() {
-    return id;
+   * Constructor with only required parameters
+   */
+  public LessonCreateRequest(String title) {
+    this.title = title;
   }
 
-  public void setId(UUID id) {
-    this.id = id;
-  }
-
-  public LessonResponse title(String title) {
+  public LessonCreateRequest title(String title) {
     this.title = title;
     return this;
   }
@@ -58,8 +43,8 @@ public class LessonResponse {
    * Get title
    * @return title
   */
-  
-  @Schema(name = "title", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+  @NotNull 
+  @Schema(name = "title", requiredMode = Schema.RequiredMode.REQUIRED)
   @JsonProperty("title")
   public String getTitle() {
     return title;
@@ -77,21 +62,19 @@ public class LessonResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    LessonResponse lessonResponse = (LessonResponse) o;
-    return Objects.equals(this.id, lessonResponse.id) &&
-        Objects.equals(this.title, lessonResponse.title);
+    LessonCreateRequest lessonCreateRequest = (LessonCreateRequest) o;
+    return Objects.equals(this.title, lessonCreateRequest.title);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, title);
+    return Objects.hash(title);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class LessonResponse {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("class LessonCreateRequest {\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("}");
     return sb.toString();
@@ -108,3 +91,4 @@ public class LessonResponse {
     return o.toString().replace("\n", "\n    ");
   }
 }
+

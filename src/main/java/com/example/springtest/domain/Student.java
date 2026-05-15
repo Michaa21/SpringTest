@@ -11,17 +11,26 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Table(name = "students", schema = "spring_test")
+@Table(name = "students")
 public class Student {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+
+    @Column(name = "extra")
+    private String extra;
+
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private Integer age;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "student_lesson",
             joinColumns = @JoinColumn(name = "student_id"),

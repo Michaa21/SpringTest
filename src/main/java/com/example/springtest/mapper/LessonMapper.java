@@ -11,6 +11,7 @@ import org.mapstruct.MappingConstants;
 public interface LessonMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "students", ignore = true)
     Lesson toEntity(LessonCreateRequest request);
 
     LessonResponse toResponse(Lesson lesson);

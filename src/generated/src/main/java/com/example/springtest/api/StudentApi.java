@@ -7,10 +7,6 @@ package com.example.springtest.api;
 
 import com.example.springtest.api.dto.request.StudentCreateRequest;
 import com.example.springtest.api.dto.response.StudentResponse;
-import com.example.springtest.api.dto.response.ErrorResponse;
-
-
-import com.example.springtest.api.dto.request.StudentCreateRequest;
 import java.util.UUID;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-01T14:30:44.608276+05:00[Asia/Yekaterinburg]")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-30T15:10:48.140575600+05:00[Asia/Yekaterinburg]")
 @Validated
 @Tag(name = "Student", description = "the Student API")
 public interface StudentApi {
@@ -58,9 +54,7 @@ public interface StudentApi {
             @ApiResponse(responseCode = "200", description = "Student created", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = StudentResponse.class))
             }),
-            @ApiResponse(responseCode = "400", description = "Validation error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            })
+            @ApiResponse(responseCode = "400", description = "Validation error")
         }
     )
     @RequestMapping(
@@ -80,23 +74,18 @@ public interface StudentApi {
      *
      * @param id  (required)
      * @return Student deleted (status code 204)
-     *         or Student not found (status code 404)
      */
     @Operation(
         operationId = "deleteStudent",
         summary = "Delete student",
         tags = { "Student" },
         responses = {
-            @ApiResponse(responseCode = "204", description = "Student deleted"),
-            @ApiResponse(responseCode = "404", description = "Student not found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            })
+            @ApiResponse(responseCode = "204", description = "Student deleted")
         }
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
-        value = "/api/students/{id}",
-        produces = { "application/json" }
+        value = "/api/students/{id}"
     )
     
     ResponseEntity<Void> deleteStudent(
@@ -119,9 +108,7 @@ public interface StudentApi {
             @ApiResponse(responseCode = "200", description = "Student found", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = StudentResponse.class))
             }),
-            @ApiResponse(responseCode = "404", description = "Student not found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            })
+            @ApiResponse(responseCode = "404", description = "Student not found")
         }
     )
     @RequestMapping(
@@ -141,8 +128,6 @@ public interface StudentApi {
      * @param id  (required)
      * @param studentCreateRequest  (required)
      * @return Student updated (status code 200)
-     *         or Validation error (status code 400)
-     *         or Student not found (status code 404)
      */
     @Operation(
         operationId = "updateStudent",
@@ -151,12 +136,6 @@ public interface StudentApi {
         responses = {
             @ApiResponse(responseCode = "200", description = "Student updated", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = StudentResponse.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Validation error", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            }),
-            @ApiResponse(responseCode = "404", description = "Student not found", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
             })
         }
     )
