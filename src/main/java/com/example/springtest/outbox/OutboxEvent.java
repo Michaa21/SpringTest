@@ -10,7 +10,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@Table(name = "outbox_events")
+@Table(name = "outbox_events", schema = "spring_test")
 public class OutboxEvent {
 
     @Id
