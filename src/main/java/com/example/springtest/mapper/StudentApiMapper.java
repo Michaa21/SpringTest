@@ -34,8 +34,5 @@ public interface StudentApiMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "name", ignore = true)
     @Mapping(target = "lessons", ignore = true)
-    void updateFromExternalResponse(
-            ExternalStudentResponse externalResponse,
-            @MappingTarget Student student
-    );
+    void updateFromExternalResponse(ExternalStudentResponse externalResponse, @MappingTarget Student student);
 }
