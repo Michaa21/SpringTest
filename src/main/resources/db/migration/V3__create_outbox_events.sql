@@ -18,9 +18,3 @@ create table if not exists spring_test.outbox_events
 
 create index if not exists idx_outbox_events_status_created_at
     on spring_test.outbox_events (status, created_at);
-
-create table if not exists spring_test.processed_events
-(
-    event_id     uuid primary key,
-    processed_at timestamp with time zone not null default now()
-);
