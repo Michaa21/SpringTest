@@ -76,6 +76,46 @@ public class StudentService {
         });
     }
 
+    public StudentResponse create(StudentCreateRequest request) {
+        return transactionTemplate.execute(status -> {
+            Student student = studentApiMapper.toEntity(request);
+            student.setId(UUID.randomUUID());
+            student.setName(request.getName());
+            student.setEmail(request.getEmail());
+            student.setAge(request.getAge());
+            student.setLessons(resolveLessons(request));
+
+            Student saved = studentRepository.save(student);
+            log.info("Student with id {} created", saved.getId());
+
+            UUID eventId = UUID.randomUUID();
+
+            StudentCreateRequestedEvent event = new StudentCreateRequestedEvent(
+                    eventId,
+                    saved.getId(),
+                    saved.getName(),
+                    saved.getEmail(),
+                    saved.getAge(),
+                    saved.getLessons()
+                            .stream()
+                            .map(Lesson::getTitle)
+                            .toList(),
+                    OffsetDateTime.now()
+            );
+
+            outboxEventService.createOutboxEvent(
+                    eventId,
+                    "STUDENT",
+                    saved.getId(),
+                    "STUDENT_CREATE_REQUESTED",
+                    KafkaTopics.STUDENT_CREATE_REQUESTS,
+                    event
+            );
+
+            return studentApiMapper.toResponse(saved);
+        });
+    }
+
     @Cacheable(value = "students", key = "#id")
     public StudentResponse getById(UUID id) {
         return transactionTemplate.execute(status -> {

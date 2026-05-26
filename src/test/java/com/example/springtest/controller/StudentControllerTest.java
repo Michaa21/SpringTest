@@ -17,13 +17,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(StudentController.class)
 class StudentControllerTest {
@@ -42,9 +37,9 @@ class StudentControllerTest {
         StudentResponse response = new StudentResponse();
         response.setId(UUID.randomUUID());
         response.setName("Bob");
-        response.setExtra("extra-info-for-Bob");
+        response.setExtra(null);
 
-        when(studentSagaOrchestratorService.createStudent(any())).thenReturn(response);
+        when(studentService.create(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/students")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -64,7 +59,7 @@ class StudentControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(response.getId().toString()))
                 .andExpect(jsonPath("$.name").value("Bob"))
-                .andExpect(jsonPath("$.extra").value("extra-info-for-Bob"));
+                .andExpect(jsonPath("$.extra").isEmpty());
     }
 
     @Test
