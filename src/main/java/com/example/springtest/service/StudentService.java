@@ -80,9 +80,6 @@ public class StudentService {
         return transactionTemplate.execute(status -> {
             Student student = studentApiMapper.toEntity(request);
             student.setId(UUID.randomUUID());
-            student.setName(request.getName());
-            student.setEmail(request.getEmail());
-            student.setAge(request.getAge());
             student.setLessons(resolveLessons(request));
 
             Student saved = studentRepository.save(student);
