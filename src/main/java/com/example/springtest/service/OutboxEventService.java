@@ -1,5 +1,8 @@
-package com.example.springtest.outbox;
+package com.example.springtest.service;
 
+import com.example.springtest.domain.OutboxEvent;
+import com.example.springtest.domain.OutboxEventStatus;
+import com.example.springtest.repository.OutboxEventRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

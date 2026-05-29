@@ -1,5 +1,7 @@
-package com.example.springtest.outbox;
+package com.example.springtest.repository;
 
+import com.example.springtest.domain.OutboxEvent;
+import com.example.springtest.domain.OutboxEventStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

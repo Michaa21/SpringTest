@@ -1,5 +1,8 @@
-package com.example.springtest.outbox;
+package com.example.springtest.kafka;
 
+import com.example.springtest.domain.OutboxEvent;
+import com.example.springtest.domain.OutboxEventStatus;
+import com.example.springtest.repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

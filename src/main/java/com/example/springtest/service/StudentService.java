@@ -9,7 +9,6 @@ import com.example.springtest.exception.EntityNotFoundException;
 import com.example.springtest.kafka.KafkaTopics;
 import com.example.springtest.kafka.event.StudentCreateRequestedEvent;
 import com.example.springtest.mapper.StudentApiMapper;
-import com.example.springtest.outbox.OutboxEventService;
 import com.example.springtest.repository.LessonRepository;
 import com.example.springtest.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
