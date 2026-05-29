@@ -25,7 +25,7 @@ public class OutboxPublisher {
     @Transactional
     public void publishNewEvents() {
         List<OutboxEvent> events = outboxEventRepository
-                .findTop10ByStatusOrderByCreatedAtAsc(OutboxEventStatus.NEW);
+                .findTop10ByStatusForUpdateSkipLocked(OutboxEventStatus.NEW.name());
 
         for (OutboxEvent event : events) {
             try {
