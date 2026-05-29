@@ -47,29 +47,7 @@ public class StudentService {
             Student saved = studentRepository.save(student);
             log.info("Student with id {} created", saved.getId());
 
-            UUID eventId = UUID.randomUUID();
-
-            StudentCreateRequestedEvent event = new StudentCreateRequestedEvent(
-                    eventId,
-                    saved.getId(),
-                    saved.getName(),
-                    saved.getEmail(),
-                    saved.getAge(),
-                    saved.getLessons()
-                            .stream()
-                            .map(Lesson::getTitle)
-                            .toList(),
-                    OffsetDateTime.now()
-            );
-
-            outboxEventService.createOutboxEvent(
-                    eventId,
-                    "STUDENT",
-                    saved.getId(),
-                    "STUDENT_CREATE_REQUESTED",
-                    KafkaTopics.STUDENT_CREATE_REQUESTS,
-                    event
-            );
+            createStudentCreateRequestedOutboxEvent(saved);
 
             return studentApiMapper.toResponse(saved);
         });
@@ -84,29 +62,7 @@ public class StudentService {
             Student saved = studentRepository.save(student);
             log.info("Student with id {} created", saved.getId());
 
-            UUID eventId = UUID.randomUUID();
-
-            StudentCreateRequestedEvent event = new StudentCreateRequestedEvent(
-                    eventId,
-                    saved.getId(),
-                    saved.getName(),
-                    saved.getEmail(),
-                    saved.getAge(),
-                    saved.getLessons()
-                            .stream()
-                            .map(Lesson::getTitle)
-                            .toList(),
-                    OffsetDateTime.now()
-            );
-
-            outboxEventService.createOutboxEvent(
-                    eventId,
-                    "STUDENT",
-                    saved.getId(),
-                    "STUDENT_CREATE_REQUESTED",
-                    KafkaTopics.STUDENT_CREATE_REQUESTS,
-                    event
-            );
+            createStudentCreateRequestedOutboxEvent(saved);
 
             return studentApiMapper.toResponse(saved);
         });
@@ -153,6 +109,32 @@ public class StudentService {
                     log.warn("Student with id {} not found", id);
                     return new EntityNotFoundException("Student", id);
                 });
+    }
+
+    private void createStudentCreateRequestedOutboxEvent(Student saved) {
+        UUID eventId = UUID.randomUUID();
+
+        StudentCreateRequestedEvent event = new StudentCreateRequestedEvent(
+                eventId,
+                saved.getId(),
+                saved.getName(),
+                saved.getEmail(),
+                saved.getAge(),
+                saved.getLessons()
+                        .stream()
+                        .map(Lesson::getTitle)
+                        .toList(),
+                OffsetDateTime.now()
+        );
+
+        outboxEventService.createOutboxEvent(
+                eventId,
+                "STUDENT",
+                saved.getId(),
+                "STUDENT_CREATE_REQUESTED",
+                KafkaTopics.STUDENT_CREATE_REQUESTS,
+                event
+        );
     }
 
     private Set<Lesson> resolveLessons(StudentCreateRequest request) {
