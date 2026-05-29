@@ -48,6 +48,4 @@ public class OutboxEvent {
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
     private OffsetDateTime publishedAt;
-
-
 }
