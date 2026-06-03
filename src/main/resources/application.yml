@@ -2,6 +2,10 @@ spring:
   application:
     name: SpringTest
 
+outbox:
+  publisher:
+    max-attempts: 5
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5433/spring_test

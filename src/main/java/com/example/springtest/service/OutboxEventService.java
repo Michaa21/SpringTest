@@ -27,7 +27,28 @@ public class OutboxEventService {
     ) {
         String payload = toJson(payloadObject);
 
+        OutboxEvent outboxEvent = toOutboxEvent(
+                eventId,
+                aggregateType,
+                aggregateId,
+                eventType,
+                topic,
+                payload
+        );
+
+        outboxEventRepository.save(outboxEvent);
+    }
+
+    private OutboxEvent toOutboxEvent(
+            UUID eventId,
+            String aggregateType,
+            UUID aggregateId,
+            String eventType,
+            String topic,
+            String payload
+    ) {
         OutboxEvent outboxEvent = new OutboxEvent();
+
         outboxEvent.setId(UUID.randomUUID());
         outboxEvent.setEventId(eventId);
         outboxEvent.setAggregateType(aggregateType);
@@ -37,7 +58,7 @@ public class OutboxEventService {
         outboxEvent.setPayload(payload);
         outboxEvent.setStatus(OutboxEventStatus.NEW);
 
-        outboxEventRepository.save(outboxEvent);
+        return outboxEvent;
     }
 
     private String toJson(Object payloadObject) {

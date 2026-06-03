@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS spring_test;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE spring_test.users
