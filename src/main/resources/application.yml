@@ -2,10 +2,6 @@ spring:
   application:
     name: SpringTest
 
-outbox:
-  publisher:
-    max-attempts: 5
-
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5433/spring_test
@@ -57,6 +53,10 @@ outbox:
     locations: classpath:db/migration
     schemas: spring_test
     default-schema: spring_test
+
+outbox:
+  publisher:
+    max-attempts: 5
 
 resilience4j:
   retry:
