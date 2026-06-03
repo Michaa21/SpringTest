@@ -45,7 +45,12 @@ public class OutboxEvent {
     private String lastError;
 
     @Column(nullable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime createdAt;
 
     private OffsetDateTime publishedAt;
+
+    @PrePersist
+    private void prePersist() {
+        createdAt = OffsetDateTime.now();
+    }
 }
