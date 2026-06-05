@@ -25,7 +25,7 @@ public class OutboxPublisher {
     private final TransactionTemplate transactionTemplate;
     private final OutboxPublisherProperties properties;
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelayString = "${outbox.publisher.fixed-delay-ms}")
     public void publishNewEvents() {
         List<OutboxEvent> events = fetchAndMarkProcessing();
 
@@ -36,11 +36,21 @@ public class OutboxPublisher {
 
     private List<OutboxEvent> fetchAndMarkProcessing() {
         return transactionTemplate.execute(status -> {
+            OffsetDateTime now = OffsetDateTime.now();
+            OffsetDateTime timeout = now.minusSeconds(properties.processingTimeoutSeconds());
+
+            int resetCount = outboxEventRepository.resetStuckProcessingEvents(timeout);
+
+            if (resetCount > 0) {
+                log.warn("Reset {} stuck outbox events from PROCESSING to NEW", resetCount);
+            }
+
             List<OutboxEvent> events = outboxEventRepository
                     .findTop10ByStatusForUpdateSkipLocked(OutboxEventStatus.NEW.name());
 
             for (OutboxEvent event : events) {
                 event.setStatus(OutboxEventStatus.PROCESSING);
+                event.setProcessingStartedAt(now);
             }
             return events;
         });
@@ -72,11 +82,13 @@ public class OutboxPublisher {
 
     private void markAsPublished(UUID eventId) {
         transactionTemplate.executeWithoutResult(status -> {
-            OutboxEvent event = outboxEventRepository.findById(eventId)
-                    .orElseThrow();
-            event.setStatus(OutboxEventStatus.PUBLISHED);
-            event.setPublishedAt(OffsetDateTime.now());
-            event.setLastError(null);
+            int updated = outboxEventRepository.markAsPublishedIfProcessing(
+                    eventId,
+                    OffsetDateTime.now()
+            );
+            if (updated == 0) {
+                log.warn("Outbox event {} was not marked as PUBLISHED because it is not PROCESSING", eventId);
+            }
         });
     }
 
@@ -87,6 +99,7 @@ public class OutboxPublisher {
 
             event.setAttempts(event.getAttempts() + 1);
             event.setLastError(errorMessage);
+            event.setProcessingStartedAt(null);
 
             if (event.getAttempts() >= properties.maxAttempts()) {
                 event.setStatus(OutboxEventStatus.FAILED);

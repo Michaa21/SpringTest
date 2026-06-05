@@ -4,9 +4,13 @@ import com.example.springtest.api.dto.request.LessonCreateRequest;
 import com.example.springtest.api.dto.request.StudentCreateRequest;
 import com.example.springtest.api.dto.response.ExternalStudentResponse;
 import com.example.springtest.api.dto.response.StudentResponse;
+import com.example.springtest.domain.OutboxEvent;
+import com.example.springtest.domain.OutboxEventStatus;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
+import com.example.springtest.kafka.KafkaTopics;
 import com.example.springtest.repository.LessonRepository;
+import com.example.springtest.repository.OutboxEventRepository;
 import com.example.springtest.repository.StudentRepository;
 import com.example.springtest.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,11 +35,15 @@ class StudentServiceIntegrationTest extends IntegrationTestBase {
     private LessonRepository lessonRepository;
 
     @Autowired
+    private OutboxEventRepository outboxEventRepository;
+
+    @Autowired
     private CacheManager cacheManager;
 
     @BeforeEach
     void setUp() {
         clearCache();
+        outboxEventRepository.deleteAll();
         studentRepository.deleteAll();
         lessonRepository.deleteAll();
     }
@@ -67,6 +75,40 @@ class StudentServiceIntegrationTest extends IntegrationTestBase {
         assertEquals("bob@mail.com", savedStudent.getEmail());
         assertEquals(20, savedStudent.getAge());
         assertEquals(1, savedStudent.getLessons().size());
+    }
+
+    @Test
+    void create_shouldCreateOutboxEvent() {
+        UUID studentId = UUID.randomUUID();
+
+        StudentCreateRequest request = studentRequest("Bob", "Math");
+
+        ExternalStudentResponse externalResponse =
+                externalResponse(studentId, "extra-info-for-Bob", "bob@mail.com", 20);
+
+        StudentResponse result = studentService.create(request, externalResponse, studentId);
+
+        List<OutboxEvent> events = outboxEventRepository.findAll();
+
+        assertEquals(1, events.size());
+
+        OutboxEvent event = events.getFirst();
+
+        assertEquals("STUDENT", event.getAggregateType());
+        assertEquals(result.getId(), event.getAggregateId());
+        assertEquals("STUDENT_CREATE_REQUESTED", event.getEventType());
+        assertEquals(KafkaTopics.STUDENT_CREATE_REQUESTS, event.getTopic());
+        assertEquals(OutboxEventStatus.NEW, event.getStatus());
+        assertEquals(0, event.getAttempts());
+        assertNull(event.getLastError());
+        assertNull(event.getPublishedAt());
+        assertNotNull(event.getCreatedAt());
+
+        assertTrue(event.getPayload().contains(studentId.toString()));
+        assertTrue(event.getPayload().contains("Bob"));
+        assertTrue(event.getPayload().contains("bob@mail.com"));
+        assertTrue(event.getPayload().contains("20"));
+        assertTrue(event.getPayload().contains("Math"));
     }
 
     @Test

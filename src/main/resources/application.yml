@@ -57,6 +57,8 @@ spring:
 outbox:
   publisher:
     max-attempts: 5
+    fixed-delay-ms: 5000
+    processing-timeout-seconds: 60
 
 resilience4j:
   retry:

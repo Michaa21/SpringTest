@@ -47,6 +47,8 @@ public class OutboxEvent {
     @Column(nullable = false)
     private OffsetDateTime createdAt;
 
+    private OffsetDateTime processingStartedAt;
+
     private OffsetDateTime publishedAt;
 
     @PrePersist

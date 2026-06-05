@@ -13,6 +13,7 @@ create table if not exists spring_test.outbox_events
     attempts       integer                  not null default 0,
     last_error     text,
     created_at     timestamp with time zone not null,
+    processing_started_at timestamp with time zone,
     published_at   timestamp with time zone
 );
 
