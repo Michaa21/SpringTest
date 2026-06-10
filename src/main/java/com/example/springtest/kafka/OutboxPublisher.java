@@ -58,26 +58,27 @@ public class OutboxPublisher {
 
     private void publishOne(OutboxEvent event) {
 
-        try {
-            kafkaTemplate.send(
-                    event.getTopic(),
-                    event.getAggregateId().toString(),
-                    event.getPayload()
-            ).get();
-        } catch (Exception exception) {
-            markAsFailedAttempt(event.getId(), exception.getMessage());
-            log.error("Failed to publish outbox event {}", event.getEventId(), exception);
-            return;
-        }
-        try {
-            markAsPublished(event.getId());
+        kafkaTemplate.send(
+                event.getTopic(),
+                event.getAggregateId().toString(),
+                event.getPayload()
+        ).whenComplete((result, exception) -> {
+            if (exception != null) {
+                markAsFailedAttempt(event.getId(), exception.getMessage());
+                log.error("Failed to publish outbox event {}", event.getEventId(), exception);
+                return;
+            }
 
-            log.info("Outbox event {} published to topic {}",
-                    event.getEventId(), event.getTopic());
-        } catch (Exception exception) {
-            log.error("Outbox event {} was sent to Kafka, but status update failed",
-                    event.getEventId(), exception);
-        }
+            try {
+                markAsPublished(event.getId());
+
+                log.info("Outbox event {} published to topic {}",
+                        event.getEventId(), event.getTopic());
+            } catch (Exception statusUpdateException) {
+                log.error("Outbox event {} was sent to Kafka, but status update failed",
+                        event.getEventId(), statusUpdateException);
+            }
+        });
     }
 
     private void markAsPublished(UUID eventId) {
@@ -94,17 +95,14 @@ public class OutboxPublisher {
 
     private void markAsFailedAttempt(UUID eventId, String errorMessage) {
         transactionTemplate.executeWithoutResult(status -> {
-            OutboxEvent event = outboxEventRepository.findById(eventId)
-                    .orElseThrow();
+            int updated = outboxEventRepository.markAsFailedAttemptIfProcessing(
+                    eventId,
+                    errorMessage,
+                    properties.maxAttempts()
+            );
 
-            event.setAttempts(event.getAttempts() + 1);
-            event.setLastError(errorMessage);
-            event.setProcessingStartedAt(null);
-
-            if (event.getAttempts() >= properties.maxAttempts()) {
-                event.setStatus(OutboxEventStatus.FAILED);
-            } else {
-                event.setStatus(OutboxEventStatus.NEW);
+            if (updated == 0) {
+                log.warn("Outbox event {} was not marked as failed attempt because it is not PROCESSING", eventId);
             }
         });
     }

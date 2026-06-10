@@ -46,4 +46,23 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, UUID> 
             @Param("id") UUID id,
             @Param("publishedAt") OffsetDateTime publishedAt
     );
+
+    @Modifying
+    @Query(value = """
+            update spring_test.outbox_events
+            set attempts = attempts + 1,
+                last_error = :lastError,
+                processing_started_at = null,
+                status = case
+                when attempts + 1 >= :maxAttempts then 'FAILED'
+                else 'NEW'
+                end
+                where id = :id
+                and status = 'PROCESSING'
+            """, nativeQuery = true)
+    int markAsFailedAttemptIfProcessing(
+            @Param("id") UUID id,
+            @Param("lastError") String lastError,
+            @Param("maxAttempts") int maxAttempts
+    );
 }
