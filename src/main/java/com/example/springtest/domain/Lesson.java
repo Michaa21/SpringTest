@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @RequiredArgsConstructor
-@Table(name = "lessons")
+@Table(name = "lessons", schema = "spring_test")
 public class Lesson {
 
     @Id

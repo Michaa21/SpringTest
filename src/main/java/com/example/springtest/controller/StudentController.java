@@ -20,7 +20,7 @@ public class StudentController implements StudentApi {
 
     @Override
     public ResponseEntity<StudentResponse> createStudent(StudentCreateRequest request) {
-        return ResponseEntity.ok(studentSagaOrchestratorService.createStudent(request));
+        return ResponseEntity.ok(studentService.create(request));
     }
 
     @Override

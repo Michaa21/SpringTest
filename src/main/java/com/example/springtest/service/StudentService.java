@@ -6,6 +6,8 @@ import com.example.springtest.api.dto.response.StudentResponse;
 import com.example.springtest.domain.Lesson;
 import com.example.springtest.domain.Student;
 import com.example.springtest.exception.EntityNotFoundException;
+import com.example.springtest.kafka.KafkaTopics;
+import com.example.springtest.kafka.event.StudentCreateRequestedEvent;
 import com.example.springtest.mapper.StudentApiMapper;
 import com.example.springtest.repository.LessonRepository;
 import com.example.springtest.repository.StudentRepository;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,6 +33,7 @@ public class StudentService {
     private final StudentApiMapper studentApiMapper;
     private final LessonRepository lessonRepository;
     private final TransactionTemplate transactionTemplate;
+    private final OutboxEventService outboxEventService;
 
     public StudentResponse create(StudentCreateRequest request, ExternalStudentResponse externalResponse, UUID studentId) {
         return transactionTemplate.execute(status -> {
@@ -42,6 +46,23 @@ public class StudentService {
 
             Student saved = studentRepository.save(student);
             log.info("Student with id {} created", saved.getId());
+
+            createStudentCreateRequestedOutboxEvent(saved);
+
+            return studentApiMapper.toResponse(saved);
+        });
+    }
+
+    public StudentResponse create(StudentCreateRequest request) {
+        return transactionTemplate.execute(status -> {
+            Student student = studentApiMapper.toEntity(request);
+            student.setId(UUID.randomUUID());
+            student.setLessons(resolveLessons(request));
+
+            Student saved = studentRepository.save(student);
+            log.info("Student with id {} created", saved.getId());
+
+            createStudentCreateRequestedOutboxEvent(saved);
 
             return studentApiMapper.toResponse(saved);
         });
@@ -88,6 +109,32 @@ public class StudentService {
                     log.warn("Student with id {} not found", id);
                     return new EntityNotFoundException("Student", id);
                 });
+    }
+
+    private void createStudentCreateRequestedOutboxEvent(Student saved) {
+        UUID eventId = UUID.randomUUID();
+
+        StudentCreateRequestedEvent event = new StudentCreateRequestedEvent(
+                eventId,
+                saved.getId(),
+                saved.getName(),
+                saved.getEmail(),
+                saved.getAge(),
+                saved.getLessons()
+                        .stream()
+                        .map(Lesson::getTitle)
+                        .toList(),
+                OffsetDateTime.now()
+        );
+
+        outboxEventService.createOutboxEvent(
+                eventId,
+                "STUDENT",
+                saved.getId(),
+                "STUDENT_CREATE_REQUESTED",
+                KafkaTopics.STUDENT_CREATE_REQUESTS,
+                event
+        );
     }
 
     private Set<Lesson> resolveLessons(StudentCreateRequest request) {
